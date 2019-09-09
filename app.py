@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import dash
-import dash_core_components as dcc
+# import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
- 
+
 # df = pd.read_csv('./nhl_2017-2018.csv', header=[0, 1, 2])
 df = pd.read_csv('./nhl_2017-2018.csv', header=2)
 
-pts = df.loc[df['PTS'] >= 100]
- 
-asd = pts.head(10)
-print(asd['Last Name'])
+pts = df.loc[df['PTS'] >= 50]
+
+gp_mean = pts['GP'].mean()
+gp_mean_str = 'Average games played by top scorers: {0} games'.format(gp_mean)
+
+pts = pts.sort_values(by=['PTS'], ascending=False)
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -31,7 +33,9 @@ def generate_table(dataframe, max_rows=10):
 
 app.layout = html.Div(children=[
     html.H4(children='NHL meik mani'),
-    generate_table(asd)
+    html.P('Here is a table of the top scorers'),
+    html.P(children=gp_mean_str),
+    generate_table(pts)
 ])
 
 if __name__ == '__main__':
