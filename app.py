@@ -7,7 +7,13 @@ import pandas as pd
 # df = pd.read_csv('./nhl_2017-2018.csv', header=[0, 1, 2])
 df = pd.read_csv('./nhl_2017-2018.csv', header=2)
 
+# Convert percentage to float
+df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
+
 pts = df.loc[df['PTS'] >= 50]
+
+ipp = pts.loc[df['IPP%'] > 80]
+top_ipp_str = 'IPP% over 80: {0}'.format(', '.join(ipp['Last Name'].values))
 
 gp_mean = pts['GP'].mean()
 gp_mean_str = 'Average games played by top scorers: {0} games'.format(gp_mean)
@@ -34,6 +40,7 @@ def generate_table(dataframe, max_rows=10):
 app.layout = html.Div(children=[
     html.H4(children='NHL meik mani'),
     html.P('Here is a table of the top scorers'),
+    html.P(top_ipp_str),
     html.P(children=gp_mean_str),
     generate_table(pts)
 ])
