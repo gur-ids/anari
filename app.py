@@ -2,6 +2,8 @@
 import dash
 # import dash_core_components as dcc
 import dash_html_components as html
+import plotly.graph_objs as go
+import dash_core_components as dcc
 import pandas as pd
 
 # df = pd.read_csv('./nhl_2017-2018.csv', header=[0, 1, 2])
@@ -42,7 +44,8 @@ app.layout = html.Div(children=[
     html.P('Here is a table of the top scorers'),
     html.P(top_ipp_str),
     html.P(children=gp_mean_str),
-    generate_table(pts)
+    generate_table(pts),
+    dcc.Graph(figure={'data': [go.Box(y=df['PTS'])]})
 ])
 
 if __name__ == '__main__':
