@@ -5,7 +5,7 @@ This is a NHL meik mani application
 Install requirements with:
 
 ```
-python -m pip install -r requirements.txt
+python -m pip install --user -r requirements.txt
 ```
 
 Run the app with
