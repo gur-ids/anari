@@ -45,7 +45,33 @@ app.layout = html.Div(children=[
     html.P(top_ipp_str),
     html.P(children=gp_mean_str),
     generate_table(pts),
-    dcc.Graph(figure={'data': [go.Box(y=df['PTS'])]})
+    dcc.Graph(figure={'data': [go.Box(y=df['PTS'])]}),
+    dcc.Graph(
+        id='test',
+        figure={
+            'data': [
+                go.Scatter(
+                    x=pts[pts['Position'] == i]['GP'],
+                    y=pts[pts['Position'] == i]['PTS'],
+                    text=pts[pts['Position'] == i]['Last Name'],
+                    mode='markers',
+                    opacity=0.7,
+                    marker={
+                        'size': 15,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    },
+                    name=i
+                ) for i in pts.Position.unique()
+            ],
+            'layout': go.Layout(
+                xaxis={'type': 'log', 'title': 'Games played'},
+                yaxis={'title': 'Points scored'},
+                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+                legend={'x': 0, 'y': 1},
+                hovermode='closest'
+            )
+        }
+    )
 ])
 
 if __name__ == '__main__':
