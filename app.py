@@ -14,6 +14,8 @@ df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
 
 pts = df.loc[df['PTS'] >= 50]
 
+pts_forward = df[(df['Position'] != 'D') & (df['GP'] >= 60)]
+
 ipp = pts.loc[df['IPP%'] > 80]
 top_ipp_str = 'IPP% over 80: {0}'.format(', '.join(ipp['Last Name'].values))
 
@@ -45,7 +47,7 @@ app.layout = html.Div(children=[
     html.P(top_ipp_str),
     html.P(children=gp_mean_str),
     generate_table(pts),
-    dcc.Graph(figure={'data': [go.Box(y=df['PTS'])]}),
+    dcc.Graph(figure={'data': [go.Box(y=pts_forward['PTS'])]}),
     dcc.Graph(
         id='test',
         figure={
