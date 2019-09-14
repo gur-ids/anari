@@ -6,6 +6,7 @@ import plotly.graph_objs as go
 import dash_core_components as dcc
 import pandas as pd
 
+# NOTE: Duplicate column names have suffixes. Another way would be:
 # df = pd.read_csv('./nhl_2017-2018.csv', header=[0, 1, 2])
 df = pd.read_csv('./nhl_2017-2018.csv', header=2)
 
