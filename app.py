@@ -9,7 +9,10 @@ import pandas as pd
 # df = pd.read_csv('./nhl_2017-2018.csv', header=[0, 1, 2])
 df = pd.read_csv('./nhl_2017-2018.csv', header=2)
 
-# Convert percentage to float
+# Format Salary
+df['Salary'] = df['Salary'].replace(r'[\$,]', '', regex=True).astype(float)
+
+# Format Individual Points Percentage
 df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
 
 pts = df.loc[df['PTS'] >= 50]
