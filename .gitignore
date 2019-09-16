@@ -1,2 +1,4 @@
 *.xls
 *.~lock*
+.vscode
+*.pyc

@@ -8,7 +8,7 @@ Install requirements with:
 python -m pip install --user -r requirements.txt
 ```
 
-Run the app with
+Run the app from folder where app.py resides (relative resource location) with
 
 ```
 python app.py
