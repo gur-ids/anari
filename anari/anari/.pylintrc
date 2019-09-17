@@ -1,6 +1,0 @@
-init-hook="
-    from pylint_venv import inithook
-    inithook()"
-
-[MESSAGES CONTROL]
-disable=C0103,E302
