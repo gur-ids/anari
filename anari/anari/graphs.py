@@ -2,6 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 
+
 def generate_table(dataframe, max_rows=10):
     return html.Table(
         # Header
@@ -13,10 +14,12 @@ def generate_table(dataframe, max_rows=10):
         ]) for i in range(min(len(dataframe), max_rows))]
     )
 
+
 def box_plot_by_points(players):
     return dcc.Graph(figure={'data': [go.Box(y=players['PTS'])]})
 
-def scatter_plot_players(plot_id, players ):
+
+def scatter_plot_players(plot_id, players):
     return dcc.Graph(
         id=plot_id,
         figure={

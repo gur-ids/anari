@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def pre_process(path):
     # NOTE: Duplicate column names have suffixes. another way would be:
     # df = pd.read_csv(path, header=[0, 1, 2]
@@ -7,6 +8,7 @@ def pre_process(path):
     df['Salary'] = df['Salary'].replace(r'[\$,]', '', regex=True).astype(float)
     df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
     return df
+
 
 def offenders(pre_processed_data):
     df = pre_processed_data
