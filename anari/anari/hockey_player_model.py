@@ -12,4 +12,3 @@ def offenders(pre_processed_data):
     df = pre_processed_data
     pts_forward = df[(df['Position'] != 'D') & (df['GP'] >= 60)]
     return pts_forward
-
