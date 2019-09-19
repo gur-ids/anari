@@ -1,12 +1,23 @@
 import pandas as pd
 
 
+def remove_columns(df):
+    # TODO
+    return df
+
+
+def format_columns(df):
+    df['Salary'] = df['Salary'].replace(r'[\$,]', '', regex=True).astype(float)
+    df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
+    return df
+
+
 def pre_process(path):
     # NOTE: Duplicate column names have suffixes. another way would be:
     # df = pd.read_csv(path, header=[0, 1, 2]
     df = pd.read_csv(path, header=2)
-    df['Salary'] = df['Salary'].replace(r'[\$,]', '', regex=True).astype(float)
-    df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
+    df = remove_columns(df)
+    df = format_columns(df)
     return df
 
 
