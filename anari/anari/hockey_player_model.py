@@ -30,4 +30,4 @@ def offenders(pre_processed_data):
 
 
 def write_to_csv(df):
-    df.to_csv('preprocessed.csv')
+    df.to_csv('../data/preprocessed.csv')
