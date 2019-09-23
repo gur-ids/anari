@@ -46,3 +46,32 @@ def scatter_plot_players(plot_id, players):
             )
         }
     )
+
+def scatter_plot_teams(plot_id, teams):
+    print(teams.head(1))
+    return dcc.Graph(
+        id=plot_id,
+        figure={
+            'data': [
+                go.Scatter(
+                    x=teams[teams['Team'] == i]['Rank'],
+                    y=teams[teams['Team'] == i]['Team'],
+                    text=teams[teams['Team'] == i]['Team'],
+                    mode='markers',
+                    opacity=0.7,
+                    marker={
+                        'size': 15,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    },
+                    name=i
+                ) for i in teams.Team.unique()
+            ],
+            'layout': go.Layout(
+                xaxis={'type': 'log', 'title': 'avg pts'},
+                yaxis={'title': 'team name'},
+                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+                legend={'x': 0, 'y': 1},
+                hovermode='closest'
+            )
+        }
+    )
