@@ -37,12 +37,13 @@ Basic info of NHL: players are hired from team's budget (cap hit) which is same 
 
 # C. Data: sources, wrangling, management
 
-Source: http://www.hockeyabstract.com/testimonials
+Player Source: http://www.hockeyabstract.com/testimonials
+Team source: http://www.nhl.com/stats/team?reportType=season&seasonFrom=20172018&seasonTo=20172018&gameType=2&filter=gamesPlayed,gte,1&sort=points,wins
 
 For wrangling and management, we use Python and Pandas.
 
 The data does not contain a lot of missing values but we will impute missing values. For the columns we are interested, only Salary and Cap Hit has missing values, which were easy to fill manually. Missing draft year and round means the player was not drafted, but the team made a contract directly to the player.
-
+Player position has been modified to have only a single value and the reason for this is that player position does not vary much e.g a left field attacked cannot also be a defender but can be a central attacker.
 Data is season-by-season which means that it does not contain information about the contract, such as, the length and expiry year.
 
 # D. Data analysis: statistics, machine learning
