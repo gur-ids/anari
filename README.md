@@ -38,7 +38,7 @@ Source: http://www.hockeyabstract.com/testimonials
 
 For wrangling and management, we use Python and Pandas.
 
-The data does not contain a lot of missing values but we will impute missing values. For the columns we are interested, only Salary and Cap Hit has missing values, which were easy to fill manually.
+The data does not contain a lot of missing values but we will impute missing values. For the columns we are interested, only Salary and Cap Hit has missing values, which were easy to fill manually. Missing draft year and round means the player was not drafted, but the team made a contract directly to the player.
 
 Data is season-by-season which means that it does not contain information about the contract, such as, the length and expiry year.
 
