@@ -38,7 +38,7 @@ Source: http://www.hockeyabstract.com/testimonials
 
 For wrangling and management, we use Python and Pandas.
 
-The data does not contain a lot of missing values but we will impute missing values.
+The data does not contain a lot of missing values but we will impute missing values. For the columns we are interested, only Salary and Cap Hit has missing values, which were easy to fill manually.
 
 Data is season-by-season which means that it does not contain information about the contract, such as, the length and expiry year.
 
