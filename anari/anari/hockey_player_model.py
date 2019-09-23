@@ -9,6 +9,7 @@ def remove_columns(df):
 def format_columns(df):
     # TODO: Consider int
     df['Salary'] = df['Salary'].replace(r'[\$,]', '', regex=True).astype(float)
+    df['Cap Hit'] = df['Cap Hit'].replace(r'[\$,]', '', regex=True).astype(float)
     df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
     df['Team'] = df['Team'].str[-3:]
     df['Position'] = df['Position'].apply(lambda x: 'C' if 'C' in x else x)
@@ -21,7 +22,6 @@ def pre_process(path):
     df = pd.read_csv(path, header=2)
     df = remove_columns(df)
     df = format_columns(df)
-    
     df.sort_values(by=['Team'], inplace=True)
     return df
 
