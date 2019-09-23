@@ -21,7 +21,6 @@ def pre_process(path):
     df = format_columns(df)
     df['Team'] = df['Team'].str[-3:]
     df.sort_values(by=['Team'], inplace=True)
-    write_to_csv(df)
     return df
 
 
