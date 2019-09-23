@@ -31,6 +31,9 @@ Basic info of NHL: players are hired from team's budget (cap hit) which is same 
 4. Is there/how strong is correlation of 1?
 5. What makes a well-balanced team ratio of expensive and cheap players?
 6. Did the player play better season than his average and why, that is, is PAX > 0?
+7. check how salary variance of a team reacts to team points?
+8. player position salary statistics
+9. give an estimate to what a player's salary should be
 
 # C. Data: sources, wrangling, management
 
