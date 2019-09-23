@@ -23,7 +23,6 @@ def pre_process(path):
     df = format_columns(df)
     
     df.sort_values(by=['Team'], inplace=True)
-    write_to_csv(df)
     return df
 
 
