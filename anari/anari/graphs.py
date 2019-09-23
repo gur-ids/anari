@@ -48,7 +48,7 @@ def scatter_plot_players(plot_id, players):
     )
 
 def scatter_plot_teams(plot_id, teams):
-    print(teams.head(1))
+    #print(teams.head(1))
     return dcc.Graph(
         id=plot_id,
         figure={
