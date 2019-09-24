@@ -1,10 +1,7 @@
-- consider player position (attacker, defender, goalee)
-- consider time on ice
-- consider players who have played in many teams
-- some data might be already pre-calculated in the sheet
-
+notes = '''
 ### What makes a well-balanced team ratio of expensive and cheap players?
 
 Just to get us started, we decided to do an intermediate visualization and data exploration with an aim to answer the question of the salary / cap hit distribution of the team. our present solution consist of three parts: (1) Plot the salary variance; (2) Examine the top three players of the team and; (3) Do something with the +/- values (defence?).
 
 Salary variance should give us an overview how evenly do the players get paid, that is, can we assume that few players are considered as a backbone of the team. Then, we take the top three players and sum their cap hit as well as their contribution to the total team points (Note: the number of players could be, e.g. calculated from a certain percentage of the cap hit within inclusive range of 3-5 players). Although this is perhaps the most fundamental part of the analysis, we don't want to miss the majority of defence because their value is measured somewhat differently and they are generally not among top players point-wise (Note: salary variance could perhaps identify forward/defence position).
+'''

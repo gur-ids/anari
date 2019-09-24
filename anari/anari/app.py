@@ -7,6 +7,7 @@ import view as v
 import team_model as tm
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
+from notes import notes
 
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
@@ -54,7 +55,7 @@ def render_content(tab):
         ])
     elif tab == 'great-stat-tab':
         return html.Div([
-            html.H3('Tab content 2'),
+			dcc.Markdown(notes),
             dcc.Graph(
                 id='graph-2-tabs',
                 figure={

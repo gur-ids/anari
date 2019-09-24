@@ -31,9 +31,9 @@ Basic info of NHL: players are hired from team's budget (cap hit) which is same 
 4. Is there/how strong is correlation of 1?
 5. What makes a well-balanced team ratio of expensive and cheap players?
 6. Did the player play better season than his average and why, that is, is PAX > 0?
-7. check how salary variance of a team reacts to team points?
-8. player position salary statistics
-9. give an estimate to what a player's salary should be
+7. Check how salary variance of a team reacts to team points?
+8. Player position salary statistics
+9. Give an estimate to what a player's salary should be
 
 # C. Data: sources, wrangling, management
 
@@ -45,6 +45,11 @@ For wrangling and management, we use Python and Pandas.
 The data does not contain a lot of missing values but we will impute missing values. For the columns we are interested, only Salary and Cap Hit has missing values, which were easy to fill manually. Missing draft year and round means the player was not drafted, but the team made a contract directly to the player.
 Player position has been modified to have only a single value and the reason for this is that player position does not vary much e.g a left field attacked cannot also be a defender but can be a central attacker.
 Data is season-by-season which means that it does not contain information about the contract, such as, the length and expiry year.
+
+- consider player position (attacker, defender, goalee)
+- consider time on ice
+- consider players who have played in many teams
+- some data might be already pre-calculated in the sheet
 
 # D. Data analysis: statistics, machine learning
 
