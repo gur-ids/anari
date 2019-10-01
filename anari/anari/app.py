@@ -15,9 +15,11 @@ df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
-offenders = hpm.offenders(df)
+forwards = hpm.forwards(df)
 top_players = hpf.filter_players_by_points(df, 50)
-team_df = tm.get_team(df, 'NSH')
+team_df_first_in = tm.get_team(df, 'NSH')
+team_df_last_in = tm.get_team(df, 'COL')
+team_df_first_out = tm.get_team(df, 'STL')
 
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -39,23 +41,54 @@ def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
             html.P(children=v.top_players_gp_mean_text(top_players)),
-            g.box_plot_by_points(offenders),
+            g.box_plot_by_points(forwards),
             g.scatter_plot_teams('test_id2', teams),
             g.scatter_plot_players('test_id', top_players)
         ])
     elif tab == 'great-stat-tab':
 
-        team_trace = go.Histogram(
-                x=team_df['Cap Hit'],
+        team_trace_first_in = go.Histogram(
+                x=team_df_first_in['Cap Hit'],
+        )
+
+        team_trace_last_in = go.Histogram(
+                x=team_df_last_in['Cap Hit'],
+        )
+
+        team_trace_first_out = go.Histogram(
+                x=team_df_first_out['Cap Hit'],
         )
 
         return html.Div([
             dcc.Markdown(notes),
+            html.H1(children='Western Conference'),
+            html.H2(children='Nashville Predators'),
             dcc.Graph(
                 figure={
-                    'data': [team_trace],
+                    'data': [team_trace_first_in],
+                    'layout': {
+                        'title': 'Cap Hit distribution',
+                    },
                 }
-            )
+            ),
+            html.H2(children='Colorado Avalanche'),
+            dcc.Graph(
+                figure={
+                    'data': [team_trace_last_in],
+                    'layout': {
+                        'title': 'Cap Hit distribution',
+                    },
+                }
+            ),
+            html.H2(children='St. Louis Blues'),
+            dcc.Graph(
+                figure={
+                    'data': [team_trace_first_out],
+                    'layout': {
+                        'title': 'Cap Hit distribution',
+                    },
+                }
+            ),
         ])
 
 
