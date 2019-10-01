@@ -21,6 +21,12 @@ team_df_first_in = tm.get_team(df, 'NSH')
 team_df_last_in = tm.get_team(df, 'COL')
 team_df_first_out = tm.get_team(df, 'STL')
 
+top_three_df = hpf.top_paid_players(team_df_last_in)
+team_cap_hit = tm.get_team_total_cap_hit(team_df_last_in)
+top_three_cap_hit = hpf.cap_hit_share(top_three_df, team_cap_hit)
+team_points = tm.get_team_total_points(team_df_last_in)
+top_three_points = hpf.points_share(top_three_df, team_points)
+
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -51,10 +57,6 @@ def render_content(tab):
                 x=team_df_first_in['Cap Hit'],
         )
 
-        team_trace_last_in = go.Histogram(
-                x=team_df_last_in['Cap Hit'],
-        )
-
         team_trace_first_out = go.Histogram(
                 x=team_df_first_out['Cap Hit'],
         )
@@ -62,6 +64,8 @@ def render_content(tab):
         return html.Div([
             dcc.Markdown(notes),
             html.H1(children='Western Conference'),
+
+            # TODO: use functions
             html.H2(children='Nashville Predators'),
             dcc.Graph(
                 figure={
@@ -71,15 +75,17 @@ def render_content(tab):
                     },
                 }
             ),
+            # TODO: top players
+
             html.H2(children='Colorado Avalanche'),
-            dcc.Graph(
-                figure={
-                    'data': [team_trace_last_in],
-                    'layout': {
-                        'title': 'Cap Hit distribution',
-                    },
-                }
-            ),
+            g.cap_hit_distribution(team_df_last_in),
+            g.generate_table(top_three_df),
+            html.Div([
+                html.P(v.top_three_cap_hit_text(top_three_cap_hit, team_cap_hit)),
+                html.P(v.top_three_points_text(top_three_points, team_points)),
+            ]),
+
+            # TODO: use functions
             html.H2(children='St. Louis Blues'),
             dcc.Graph(
                 figure={
@@ -89,6 +95,7 @@ def render_content(tab):
                     },
                 }
             ),
+            # TODO: top players
         ])
 
 

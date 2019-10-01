@@ -47,8 +47,25 @@ def scatter_plot_players(plot_id, players):
         }
     )
 
+
+def cap_hit_distribution(df):
+    team_trace_last_in = go.Histogram(
+        x=df['Cap Hit'],
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': [team_trace_last_in],
+                'layout': {
+                    'title': 'Cap Hit distribution',
+                },
+            }
+        )
+    )
+
+
 def scatter_plot_teams(plot_id, teams):
-    #print(teams.head(1))
     return dcc.Graph(
         id=plot_id,
         figure={
