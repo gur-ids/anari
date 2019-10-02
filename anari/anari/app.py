@@ -23,7 +23,9 @@ team_df_first_out = tm.get_team(df, 'STL')
 
 top_three_df = hpf.top_paid_players(team_df_last_in)
 team_cap_hit = tm.get_team_total_cap_hit(team_df_last_in)
+max_cap_hit = tm.get_max_cap_hit()
 top_three_cap_hit = hpf.cap_hit_share(top_three_df, team_cap_hit)
+top_three_total_cap_hit = hpf.cap_hit_share(top_three_df, max_cap_hit)
 team_points = tm.get_team_total_points(team_df_last_in)
 top_three_points = hpf.points_share(top_three_df, team_points)
 
@@ -82,6 +84,7 @@ def render_content(tab):
             g.generate_table(top_three_df),
             html.Div([
                 html.P(v.top_three_cap_hit_text(top_three_cap_hit, team_cap_hit)),
+                html.P(v.top_three_max_cap_hit_text(top_three_total_cap_hit, max_cap_hit)),
                 html.P(v.top_three_points_text(top_three_points, team_points)),
             ]),
 

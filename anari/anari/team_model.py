@@ -16,6 +16,8 @@ def get_team_avg_scores(df):
 def get_team_total_cap_hit(df):
     return df['Cap Hit'].sum()
 
+def get_max_cap_hit():
+    return 75000000
 
 def get_team_total_points(df):
     return df['PTS'].sum()
