@@ -19,30 +19,33 @@ def box_plot_by_points(players):
     return dcc.Graph(figure={'data': [go.Box(y=players['PTS'])]})
 
 
-def scatter_plot_players(plot_id, players):
+def scatter_plot_toi_pts(plot_id, df):
+    traces = []
+
+    for i in df.Position.unique():
+        traces.append(go.Scatter(
+            x=df[df['Position'] == i]['TOI/GP'],
+            y=df[df['Position'] == i]['PTS'],
+            text=df[df['Position'] == i]['Last Name'],
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+
     return dcc.Graph(
         id=plot_id,
         figure={
-            'data': [
-                go.Scatter(
-                    x=players[players['Position'] == i]['GP'],
-                    y=players[players['Position'] == i]['PTS'],
-                    text=players[players['Position'] == i]['Last Name'],
-                    mode='markers',
-                    opacity=0.7,
-                    marker={
-                        'size': 15,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    },
-                    name=i
-                ) for i in players.Position.unique()
-            ],
+            'data': traces,
             'layout': go.Layout(
-                xaxis={'type': 'log', 'title': 'Games played'},
+                xaxis={'type': 'log', 'title': 'Time on ice per game'},
                 yaxis={'title': 'Points scored'},
-                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                 legend={'x': 0, 'y': 1},
-                hovermode='closest'
+                hovermode='closest',
+                title='Ice time and points (>= 50)',
             )
         }
     )

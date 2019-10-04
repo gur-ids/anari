@@ -16,7 +16,7 @@ teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
 forwards_df = hpm.forwards(df)
-top_players = hpf.filter_players_by_points(df, 50)
+top_players_df = hpf.filter_players_by_points(df, 50)
 
 w_top_df = tm.get_team(df, 'NSH')
 w_bottom_df = tm.get_team(df, 'COL')
@@ -54,10 +54,10 @@ app.layout = html.Div([
 def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
-            html.P(children=v.top_players_gp_mean_text(top_players)),
+            html.P(children=v.top_players_gp_mean_text(top_players_df)),
             g.box_plot_by_points(forwards_df),
             g.scatter_plot_teams('test_id2', teams_df),
-            g.scatter_plot_players('test_id', top_players)
+            g.scatter_plot_toi_pts('toi_pts', top_players_df)
         ])
     elif tab == 'great-stat-tab':
 
