@@ -15,8 +15,20 @@ def generate_table(dataframe, max_rows=10):
     )
 
 
-def box_plot_by_points(players):
-    return dcc.Graph(figure={'data': [go.Box(y=players['PTS'])]})
+def box_plot_by_points(df):
+    trace = go.Box(
+        y=df['PTS'],
+        name='Forwards',
+    )
+
+    return dcc.Graph(
+        figure={
+            'data': [trace],
+            'layout': {
+                'title': 'Points distribution of forwards with >= 60 games played',
+            }
+        }
+    )
 
 
 def scatter_plot_toi_pts(plot_id, df):

@@ -26,11 +26,5 @@ def pre_process(path):
     return df
 
 
-def forwards(pre_processed_data):
-    df = pre_processed_data
-    pts_forward = df[(df['Position'] != 'D') & (df['GP'] >= 60)]
-    return pts_forward
-
-
 def write_to_csv(df):
     df.to_csv('../data/preprocessed.csv')

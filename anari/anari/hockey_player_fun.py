@@ -24,3 +24,7 @@ def cap_hit_share(players, cap_hit):
 
 def points_share(players, points):
     return players['PTS'].sum() / points * 100
+
+
+def forwards_by_gp(df, games_played):
+    return df[(df['Position'] != 'D') & (df['GP'] >= games_played)]

@@ -15,7 +15,7 @@ df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
-forwards_df = hpm.forwards(df)
+forwards_df = hpf.forwards_by_gp(df, 60)
 top_players_df = hpf.filter_players_by_points(df, 50)
 
 w_top_df = tm.get_team(df, 'NSH')
