@@ -52,14 +52,14 @@ def scatter_plot_toi_pts(plot_id, df):
 
 
 def cap_hit_distribution(df):
-    team_trace_last_in = go.Histogram(
+    trace = go.Histogram(
         x=df['Cap Hit'],
     )
 
     return (
         dcc.Graph(
             figure={
-                'data': [team_trace_last_in],
+                'data': [trace],
                 'layout': {
                     'title': 'Cap Hit distribution',
                 },
