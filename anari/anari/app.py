@@ -54,7 +54,6 @@ app.layout = html.Div([
 def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
-            html.P(children=v.top_players_gp_mean_text(top_players_df)),
             g.box_plot_by_points(forwards_df),
             g.scatter_plot_teams('test_id2', teams_df),
             g.scatter_plot_toi_pts('toi_pts', top_players_df)

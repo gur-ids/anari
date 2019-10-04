@@ -1,7 +1,3 @@
-def top_players_gp_mean_text(top_players):
-    return 'Average games played by top scorers: {0} games'.format(top_players['GP'].mean())
-
-
 def top_paid_cap_hit_text(top_paid_cap_hit, team_cap_hit):
     return 'Cap Hit of top three most expensive players: {0}%. Total Team Cap Hit (without goalies) is: {1}'.format(
             int(round(top_paid_cap_hit)),
