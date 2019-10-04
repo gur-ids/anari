@@ -4,7 +4,18 @@ def filter_players_by_points(players, min_points):
 
 def top_paid_players(df):
     top_three = df.sort_values(by=['Cap Hit'], ascending=False).head(3)
-    return top_three[['H-Ref Name', 'Position', 'GP', 'G', 'A', 'PTS', 'IPP%', 'Cap Hit']]
+    return top_three[[
+        'H-Ref Name',
+        'Position',
+        'GP',
+        'G',
+        'A',
+        'PTS',
+        '+/-',
+        'TOI/GP',
+        'IPP%',
+        'Cap Hit',
+        ]]
 
 
 def cap_hit_share(players, cap_hit):
