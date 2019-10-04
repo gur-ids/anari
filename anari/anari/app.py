@@ -12,14 +12,28 @@ from notes import notes
 
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
-teams = tm.pre_process('../data/team_stats_2017-2018.csv')
+teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
-forwards = hpm.forwards(df)
+forwards_df = hpm.forwards(df)
 top_players = hpf.filter_players_by_points(df, 50)
-team_df_first_in = tm.get_team(df, 'NSH')
-team_df_last_in = tm.get_team(df, 'COL')
-team_df_first_out = tm.get_team(df, 'STL')
+
+w_top_df = tm.get_team(df, 'NSH')
+w_bottom_df = tm.get_team(df, 'COL')
+w_out_df = tm.get_team(df, 'STL')
+
+w_top_name = tm.get_team_full_name(teams_df, 'NSH')
+w_bottom_name = tm.get_team_full_name(teams_df, 'COL')
+w_out_name = tm.get_team_full_name(teams_df, 'STL')
+
+max_cap_hit = tm.get_max_cap_hit()
+
+w_bottom_top_paid_df = hpf.top_paid_players(w_bottom_df)
+w_bottom_cap_hit = tm.get_team_total_cap_hit(w_bottom_df)
+w_bottom_top_paid_cap_hit = hpf.cap_hit_share(w_bottom_top_paid_df, w_bottom_cap_hit)
+w_bottom_top_paid_cap_hit_total = hpf.cap_hit_share(w_bottom_top_paid_df, max_cap_hit)
+w_bottom_points = tm.get_team_total_points(w_bottom_df)
+w_bottom_top_paid_points = hpf.points_share(w_bottom_top_paid_df, w_bottom_points)
 
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -41,54 +55,56 @@ def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
             html.P(children=v.top_players_gp_mean_text(top_players)),
-            g.box_plot_by_points(forwards),
-            g.scatter_plot_teams('test_id2', teams),
+            g.box_plot_by_points(forwards_df),
+            g.scatter_plot_teams('test_id2', teams_df),
             g.scatter_plot_players('test_id', top_players)
         ])
     elif tab == 'great-stat-tab':
 
-        team_trace_first_in = go.Histogram(
-                x=team_df_first_in['Cap Hit'],
+        team_trace_w_top = go.Histogram(
+                x=w_top_df['Cap Hit'],
         )
 
-        team_trace_last_in = go.Histogram(
-                x=team_df_last_in['Cap Hit'],
-        )
-
-        team_trace_first_out = go.Histogram(
-                x=team_df_first_out['Cap Hit'],
+        team_trace_out = go.Histogram(
+                x=w_out_df['Cap Hit'],
         )
 
         return html.Div([
             dcc.Markdown(notes),
             html.H1(children='Western Conference'),
-            html.H2(children='Nashville Predators'),
+
+            # TODO: use functions
+            html.H2(children=w_top_name),
             dcc.Graph(
                 figure={
-                    'data': [team_trace_first_in],
+                    'data': [team_trace_w_top],
                     'layout': {
                         'title': 'Cap Hit distribution',
                     },
                 }
             ),
-            html.H2(children='Colorado Avalanche'),
+            # TODO: top players
+
+            html.H2(children=w_bottom_name),
+            g.cap_hit_distribution(w_bottom_df),
+            g.generate_table(w_bottom_top_paid_df),
+            html.Div([
+                html.P(v.top_paid_cap_hit_text(w_bottom_top_paid_cap_hit, w_bottom_cap_hit)),
+                html.P(v.top_paid_max_cap_hit_text(w_bottom_top_paid_cap_hit_total, max_cap_hit)),
+                html.P(v.top_paid_points_text(w_bottom_top_paid_points, w_bottom_points)),
+            ]),
+
+            # TODO: use functions
+            html.H2(children=w_out_name),
             dcc.Graph(
                 figure={
-                    'data': [team_trace_last_in],
+                    'data': [team_trace_out],
                     'layout': {
                         'title': 'Cap Hit distribution',
                     },
                 }
             ),
-            html.H2(children='St. Louis Blues'),
-            dcc.Graph(
-                figure={
-                    'data': [team_trace_first_out],
-                    'layout': {
-                        'title': 'Cap Hit distribution',
-                    },
-                }
-            ),
+            # TODO: top players
         ])
 
 
