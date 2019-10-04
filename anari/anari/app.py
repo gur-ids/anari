@@ -17,21 +17,23 @@ teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 # handling pre-processed data
 forwards_df = hpm.forwards(df)
 top_players = hpf.filter_players_by_points(df, 50)
-team_first_in_df = tm.get_team(df, 'NSH')
-team_last_in_df = tm.get_team(df, 'COL')
-team_last_first_df = tm.get_team(df, 'STL')
 
-team_first_in_name = tm.get_team_full_name(teams_df, 'NSH')
-team_last_in_name = tm.get_team_full_name(teams_df, 'COL')
-team_first_out_name = tm.get_team_full_name(teams_df, 'STL')
+w_top_df = tm.get_team(df, 'NSH')
+w_bottom_df = tm.get_team(df, 'COL')
+w_out_df = tm.get_team(df, 'STL')
 
-top_three_df = hpf.top_paid_players(team_last_in_df)
-team_cap_hit = tm.get_team_total_cap_hit(team_last_in_df)
+w_top_name = tm.get_team_full_name(teams_df, 'NSH')
+w_bottom_name = tm.get_team_full_name(teams_df, 'COL')
+w_out_name = tm.get_team_full_name(teams_df, 'STL')
+
 max_cap_hit = tm.get_max_cap_hit()
-top_three_cap_hit = hpf.cap_hit_share(top_three_df, team_cap_hit)
-top_three_total_cap_hit = hpf.cap_hit_share(top_three_df, max_cap_hit)
-team_points = tm.get_team_total_points(team_last_in_df)
-top_three_points = hpf.points_share(top_three_df, team_points)
+
+w_bottom_top_paid_df = hpf.top_paid_players(w_bottom_df)
+w_bottom_cap_hit = tm.get_team_total_cap_hit(w_bottom_df)
+w_bottom_top_paid_cap_hit = hpf.cap_hit_share(w_bottom_top_paid_df, w_bottom_cap_hit)
+w_bottom_top_paid_cap_hit_total = hpf.cap_hit_share(w_bottom_top_paid_df, max_cap_hit)
+w_bottom_points = tm.get_team_total_points(w_bottom_df)
+w_bottom_top_paid_points = hpf.points_share(w_bottom_top_paid_df, w_bottom_points)
 
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -59,12 +61,12 @@ def render_content(tab):
         ])
     elif tab == 'great-stat-tab':
 
-        team_trace_first_in = go.Histogram(
-                x=team_first_in_df['Cap Hit'],
+        team_trace_w_top = go.Histogram(
+                x=w_top_df['Cap Hit'],
         )
 
-        team_trace_first_out = go.Histogram(
-                x=team_last_first_df['Cap Hit'],
+        team_trace_out = go.Histogram(
+                x=w_out_df['Cap Hit'],
         )
 
         return html.Div([
@@ -72,10 +74,10 @@ def render_content(tab):
             html.H1(children='Western Conference'),
 
             # TODO: use functions
-            html.H2(children=team_first_in_name),
+            html.H2(children=w_top_name),
             dcc.Graph(
                 figure={
-                    'data': [team_trace_first_in],
+                    'data': [team_trace_w_top],
                     'layout': {
                         'title': 'Cap Hit distribution',
                     },
@@ -83,20 +85,20 @@ def render_content(tab):
             ),
             # TODO: top players
 
-            html.H2(children=team_last_in_name),
-            g.cap_hit_distribution(team_last_in_df),
-            g.generate_table(top_three_df),
+            html.H2(children=w_bottom_name),
+            g.cap_hit_distribution(w_bottom_df),
+            g.generate_table(w_bottom_top_paid_df),
             html.Div([
-                html.P(v.top_three_cap_hit_text(top_three_cap_hit, team_cap_hit)),
-                html.P(v.top_three_max_cap_hit_text(top_three_total_cap_hit, max_cap_hit)),
-                html.P(v.top_three_points_text(top_three_points, team_points)),
+                html.P(v.top_paid_cap_hit_text(w_bottom_top_paid_cap_hit, w_bottom_cap_hit)),
+                html.P(v.top_paid_max_cap_hit_text(w_bottom_top_paid_cap_hit_total, max_cap_hit)),
+                html.P(v.top_paid_points_text(w_bottom_top_paid_points, w_bottom_points)),
             ]),
 
             # TODO: use functions
-            html.H2(children=team_first_out_name),
+            html.H2(children=w_out_name),
             dcc.Graph(
                 figure={
-                    'data': [team_trace_first_out],
+                    'data': [team_trace_out],
                     'layout': {
                         'title': 'Cap Hit distribution',
                     },
