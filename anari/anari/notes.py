@@ -8,4 +8,6 @@ Salary variance should give us an overview how evenly do the players get paid, t
 Some differences in the salary between teams can be explained with different taxing policies within states, for example, Florida has very low taxes compared to the state of New York. Other things worth to note are that some players play only few games in season. Sometimes they are rookies, sometimes they are injured etc. These player will skew the cap hit to some amount, but these circumstances will affect all the teams.
 
 Lower limit for the cap hit in the season 2017-2018 was $55.4M and the upper limit $75M.
+
+Here we will investigate three teams in Eastern and Western conferences separately during the regular season: (1) The winner; (2) Last team in into playoffs and; (3) First team out from playoffs.
 '''
