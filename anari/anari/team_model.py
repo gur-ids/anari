@@ -25,3 +25,7 @@ def get_max_cap_hit():
 
 def get_team_total_points(df):
     return df['PTS'].sum()
+
+
+def get_team_full_name(df, team_name):
+    return df.loc[df['Team'] == team_name, 'Team Name']

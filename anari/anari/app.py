@@ -21,6 +21,10 @@ team_df_first_in = tm.get_team(df, 'NSH')
 team_df_last_in = tm.get_team(df, 'COL')
 team_df_first_out = tm.get_team(df, 'STL')
 
+team_first_in_name = tm.get_team_full_name(teams_df, 'NSH')
+team_last_in_name = tm.get_team_full_name(teams_df, 'COL')
+team_first_out_name = tm.get_team_full_name(teams_df, 'STL')
+
 top_three_df = hpf.top_paid_players(team_df_last_in)
 team_cap_hit = tm.get_team_total_cap_hit(team_df_last_in)
 max_cap_hit = tm.get_max_cap_hit()
@@ -68,7 +72,7 @@ def render_content(tab):
             html.H1(children='Western Conference'),
 
             # TODO: use functions
-            html.H2(children='Nashville Predators'),
+            html.H2(children=team_first_in_name),
             dcc.Graph(
                 figure={
                     'data': [team_trace_first_in],
@@ -79,7 +83,7 @@ def render_content(tab):
             ),
             # TODO: top players
 
-            html.H2(children='Colorado Avalanche'),
+            html.H2(children=team_last_in_name),
             g.cap_hit_distribution(team_df_last_in),
             g.generate_table(top_three_df),
             html.Div([
@@ -89,7 +93,7 @@ def render_content(tab):
             ]),
 
             # TODO: use functions
-            html.H2(children='St. Louis Blues'),
+            html.H2(children=team_first_out_name),
             dcc.Graph(
                 figure={
                     'data': [team_trace_first_out],
