@@ -12,25 +12,25 @@ from notes import notes
 
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
-teams = tm.pre_process('../data/team_stats_2017-2018.csv')
+teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
-forwards = hpm.forwards(df)
+forwards_df = hpm.forwards(df)
 top_players = hpf.filter_players_by_points(df, 50)
-team_df_first_in = tm.get_team(df, 'NSH')
-team_df_last_in = tm.get_team(df, 'COL')
-team_df_first_out = tm.get_team(df, 'STL')
+team_first_in_df = tm.get_team(df, 'NSH')
+team_last_in_df = tm.get_team(df, 'COL')
+team_last_first_df = tm.get_team(df, 'STL')
 
 team_first_in_name = tm.get_team_full_name(teams_df, 'NSH')
 team_last_in_name = tm.get_team_full_name(teams_df, 'COL')
 team_first_out_name = tm.get_team_full_name(teams_df, 'STL')
 
-top_three_df = hpf.top_paid_players(team_df_last_in)
-team_cap_hit = tm.get_team_total_cap_hit(team_df_last_in)
+top_three_df = hpf.top_paid_players(team_last_in_df)
+team_cap_hit = tm.get_team_total_cap_hit(team_last_in_df)
 max_cap_hit = tm.get_max_cap_hit()
 top_three_cap_hit = hpf.cap_hit_share(top_three_df, team_cap_hit)
 top_three_total_cap_hit = hpf.cap_hit_share(top_three_df, max_cap_hit)
-team_points = tm.get_team_total_points(team_df_last_in)
+team_points = tm.get_team_total_points(team_last_in_df)
 top_three_points = hpf.points_share(top_three_df, team_points)
 
 # produced view
@@ -53,18 +53,18 @@ def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
             html.P(children=v.top_players_gp_mean_text(top_players)),
-            g.box_plot_by_points(forwards),
-            g.scatter_plot_teams('test_id2', teams),
+            g.box_plot_by_points(forwards_df),
+            g.scatter_plot_teams('test_id2', teams_df),
             g.scatter_plot_players('test_id', top_players)
         ])
     elif tab == 'great-stat-tab':
 
         team_trace_first_in = go.Histogram(
-                x=team_df_first_in['Cap Hit'],
+                x=team_first_in_df['Cap Hit'],
         )
 
         team_trace_first_out = go.Histogram(
-                x=team_df_first_out['Cap Hit'],
+                x=team_last_first_df['Cap Hit'],
         )
 
         return html.Div([
@@ -84,7 +84,7 @@ def render_content(tab):
             # TODO: top players
 
             html.H2(children=team_last_in_name),
-            g.cap_hit_distribution(team_df_last_in),
+            g.cap_hit_distribution(team_last_in_df),
             g.generate_table(top_three_df),
             html.Div([
                 html.P(v.top_three_cap_hit_text(top_three_cap_hit, team_cap_hit)),
