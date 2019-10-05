@@ -1,13 +1,14 @@
 import dash
+import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-import hockey_player_model as hpm
-import hockey_player_fun as hpf
-import graphs as g
-import view as v
-import team_model as tm
-import dash_core_components as dcc
 from dash.dependencies import Input, Output
+
+import graphs as g
+import hockey_player_fun as hpf
+import hockey_player_model as hpm
+import team_model as tm
+import view as v
 from notes import notes
 
 # initial pre-processing
