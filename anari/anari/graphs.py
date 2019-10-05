@@ -35,14 +35,25 @@ def scatter_plot_toi_pts(plot_id, df):
     traces = []
 
     for i in df.Position.unique():
+        # Marker size
+        # https://plot.ly/python/bubble-charts/#scaling-the-size-of-bubble-charts
+        df_by_position = df[df['Position'] == i]
+        size = df_by_position['Cap Hit']
+        sizeref = 2.*max(size)/(20.**2)
+
+        text = df[df['Position'] == i]['H-Ref Name']
+
         traces.append(go.Scatter(
             x=df[df['Position'] == i]['TOI/GP'],
             y=df[df['Position'] == i]['PTS'],
-            text=df[df['Position'] == i]['Last Name'],
+            text=text,
             mode='markers',
             opacity=0.7,
             marker={
-                'size': 15,
+                'size': size,
+                'sizeref': sizeref,
+                'sizemode': 'area',
+                'sizemin': 4,
                 'line': {'width': 0.5, 'color': 'white'}
             },
             name=i
