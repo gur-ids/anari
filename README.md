@@ -35,6 +35,7 @@ Basic info of NHL: players are hired from team's budget (cap hit) which is same 
 ## Data: sources, wrangling, management
 
 Player Source: http://www.hockeyabstract.com/testimonials
+
 Team source: http://www.nhl.com/stats/team?reportType=season&seasonFrom=20172018&seasonTo=20172018&gameType=2&filter=gamesPlayed,gte,1&sort=points,wins
 
 For wrangling and management, we use Python and Pandas.
