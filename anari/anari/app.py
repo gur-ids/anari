@@ -37,7 +37,6 @@ app.layout=html.Div(children=[
 ])
 '''
 test_df = pd.read_csv('../data/preprocessed2.csv')
-print(test_df)
 available_indicators = test_df['Indicator Name'].unique()
 app.suppress_callback_exceptions=True
 app.layout = html.Div([
@@ -48,7 +47,8 @@ app.layout = html.Div([
         dcc.Tab(label='test', value='test')
     ]),
     html.Div(id='tabs-content-example'),
-    html.Div(id='tabs-content-example2')
+    html.Div(id='tabs-content-example2'),
+    html.Div(id='tabs-content-example3')
 ])
 
 @app.callback(Output('tabs-content-example', 'children'),
@@ -70,13 +70,81 @@ def render_content(tab):
                 id='graph-2-tabs',
                 figure={
                     'data': [{
-                        'x': [1, 2, 3],
-                        'y': [5, 10, 6],
+                        'x': teams['Team'],
+                        'y': teams['Points'],
                         'type': 'bar'
                     }]
                 }
             )
         ])        
+
+def top_bottom_teams(teams):
+    teams = teams.sort_values(by = 'Points', ascending = False)
+    df = teams.head(5)
+    df = df.append(teams.tail(5))
+    return df
+
+teams_subset = top_bottom_teams(teams)
+
+@app.callback(Output('tabs-content-example3', 'children'),
+              [Input('tabs-example', 'value')])
+def render_content3(tab):
+    return html.Div([
+        html.Div([
+            dcc.Graph(
+                id='teams-details',
+                figure={
+                    'data': [{
+                        'x': teams_subset['Team'],
+                        'y': teams_subset['Points'],
+                        'type': 'bar'
+                    }]
+                },
+                #hoverData={'points': [{'customdata': 'Japan'}]}
+            )
+        ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
+        html.Div([
+            dcc.Graph(id='team-details'),dcc.Graph(id='team-details')
+        ], style={'display': 'inline-block', 'width': '49%'}),
+    ],style={'display': 'none' if tab != 'test' else 'block'})
+
+@app.callback(
+    dash.dependencies.Output('team-details', 'figure'),
+    [dash.dependencies.Input('teams-details', 'hoverData')])
+def update_detailed_team_graphs(hoverData):
+    team_name = hoverData['points'][0]['x']
+    players = tm.get_team(df, team_name)
+    #title = '<b>{}</b><br>{Callback}'.format(team_name)
+    return {
+        'data': [
+            go.Scatter(
+                x=players[players['Position'] == i]['GP'],
+                y=players[players['Position'] == i]['PTS'],
+                text=players[players['Position'] == i]['Last Name'],
+                mode='markers',
+                opacity=0.7,
+                marker={
+                    'size': 15,
+                    'line': {'width': 0.5, 'color': 'white'}
+                },
+                name=i
+            ) for i in players.Position.unique()
+        ],
+        'layout': go.Layout(
+            xaxis={
+                'title': 'xtitle',
+                'type': 'linear'
+            },
+            yaxis={
+                'title': 'ytitle',
+                'type': 'linear'
+            },
+            legend={'x': 0, 'y': 1},
+            margin={'l': 40, 'b': 30, 't': 10, 'r': 0},
+            height=450,
+            hovermode='closest'
+        )
+    }
 
 def is_test_tab_showing(tab):
         if tab != 'test':
@@ -202,6 +270,7 @@ def create_time_series(dff, axis_type, title):
     dash.dependencies.Input('crossfilter-xaxis-type', 'value')])
 def update_y_timeseries(hoverData, xaxis_column_name, axis_type):
     country_name = hoverData['points'][0]['customdata']
+    print(hoverData)
     dff = test_df[test_df['Country Name'] == country_name]
     dff = dff[dff['Indicator Name'] == xaxis_column_name]
     title = '<b>{}</b><br>{}'.format(country_name, xaxis_column_name)
