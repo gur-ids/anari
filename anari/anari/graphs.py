@@ -91,24 +91,27 @@ def cap_hit_distribution(df):
     )
 
 
-def scatter_plot_teams(plot_id, teams):
+def scatter_plot_teams(plot_id, df):
+    traces = []
+
+    for i in df.Team.unique():
+        traces.append(go.Scatter(
+            x=df[df['Team'] == i]['Rank'],
+            y=df[df['Team'] == i]['Team'],
+            text=df[df['Team'] == i]['Team'],
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+
     return dcc.Graph(
         id=plot_id,
         figure={
-            'data': [
-                go.Scatter(
-                    x=teams[teams['Team'] == i]['Rank'],
-                    y=teams[teams['Team'] == i]['Team'],
-                    text=teams[teams['Team'] == i]['Team'],
-                    mode='markers',
-                    opacity=0.7,
-                    marker={
-                        'size': 15,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    },
-                    name=i
-                ) for i in teams.Team.unique()
-            ],
+            'data': traces,
             'layout': go.Layout(
                 xaxis={'type': 'log', 'title': 'avg pts'},
                 yaxis={'title': 'team name'},
@@ -118,3 +121,69 @@ def scatter_plot_teams(plot_id, teams):
             )
         }
     )
+
+
+def update_overview_team_graphs(df, y_value):
+    trace = go.Scatter(
+        x=df['Points'],
+        y=df[y_value],
+        text=df['Team Name'],
+        customdata=df['Team'],
+        mode='markers',
+        marker={
+            'size': 15,
+            'opacity': 0.5,
+            'line': {'width': 0.5, 'color': 'white'}
+        }
+    )
+
+    return {
+        'data': [trace],
+        'layout': go.Layout(
+            xaxis={
+                'title': 'Team points',
+                'type': 'linear'
+            },
+            yaxis={
+                'title': 'avg ' + y_value,
+                'type': 'linear'
+            },
+            legend={'x': 0, 'y': 1},
+            hovermode='closest'
+        )
+    }
+
+
+def update_detailed_team_graphs(df, x_value, y_value, title):
+    traces = []
+
+    for i in df.Position.unique():
+        traces.append(go.Scatter(
+            x=df[df['Position'] == i][x_value],
+            y=df[df['Position'] == i][y_value],
+            text=df[df['Position'] == i]['Last Name'],
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+
+    return {
+        'data': traces,
+        'layout': go.Layout(
+            xaxis={
+                'title': x_value,
+                'type': 'linear'
+            },
+            yaxis={
+                'title': y_value,
+                'type': 'linear'
+            },
+            legend={'x': 0, 'y': 1},
+            hovermode='closest',
+            title=title
+        )
+    }

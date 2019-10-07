@@ -109,15 +109,11 @@ def render_content(tab):
         ])
 
 
-def top_bottom_teams(teams):
-    return teams.sort_values(by='Points', ascending=False)
-
-
 position_filter_data = [
     {'label': 'Center', 'value': 'C'},
-    {'label': 'Defence Man', 'value': 'D'},
+    {'label': 'Defenceman', 'value': 'D'},
     {'label': 'Left Wing', 'value': 'LW'},
-    {'label': 'Right Wint', 'value': 'RW'}
+    {'label': 'Right Wing', 'value': 'RW'}
 ]
 position_agg_method = [
     {'label': 'Mean', 'value': 'mean'},
@@ -130,7 +126,6 @@ right_table_x_label = ['+/-', 'Age', 'PTS', 'Cap Hit', 'TOI/GP', 'PAX', 'IPP%', 
 @app.callback(Output('render_team_stats', 'children'),
               [Input('tabs', 'value')])
 def render_team_stats(tab):
-
     return html.Div([
         html.Div([
             html.Div([
@@ -179,41 +174,18 @@ def render_team_stats(tab):
         dash.dependencies.Input('agg_method', 'value'),
     ])
 def update_overview_team_graphs(player_positions, criteria, agg_method):
-    teams_subset = top_bottom_teams(teams_df)
+    teams_subset = tm.top_bottom_teams(teams_df)
     players_of_team = tm.get_teams(df, teams_subset['Team'])
     players_of_team = players_of_team[players_of_team.Position.isin(player_positions)]
+
     if agg_method == 'mean':
-        players_of_team = players_of_team.groupby('Team', as_index=False)[criteria].mean()
+        players_of_team = tm.get_mean_by(players_of_team, criteria)
     elif agg_method == 'variance':
-        players_of_team = players_of_team.groupby('Team', as_index=False)[criteria].var()
+        players_of_team = tm.get_variance_by(players_of_team, criteria)
 
     teams_subset = teams_subset.merge(players_of_team, left_on='Team', right_on='Team')
-    return {
-        'data': [go.Scatter(
-                    x=teams_subset['Points'],
-                    y=teams_subset[criteria],
-                    text=teams_subset['Team Name'],
-                    customdata=teams_subset['Team'],
-                    mode='markers',
-                    marker={
-                        'size': 15,
-                        'opacity': 0.5,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    }
-                )],
-        'layout': go.Layout(
-            xaxis={
-                'title': 'Team points',
-                'type': 'linear'
-            },
-            yaxis={
-                'title': 'avg ' + criteria,
-                'type': 'linear'
-            },
-            legend={'x': 0, 'y': 1},
-            hovermode='closest'
-        )
-    }
+
+    return g.update_overview_team_graphs(teams_subset, criteria)
 
 
 @app.callback(
@@ -228,38 +200,9 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
     players = tm.get_team(df, team_name)
     players = players[players.Position.isin(player_positions)]
-    title = '<b>{}</b><br>{}'.format(
-        hoverData['points'][0]['text'] if hoverData is not None else 'Nashville Predators',
-        other_criteria + ',' + criteria)
-    return {
-        'data': [
-            go.Scatter(
-                x=players[players['Position'] == i][other_criteria],
-                y=players[players['Position'] == i][criteria],
-                text=players[players['Position'] == i]['Last Name'],
-                mode='markers',
-                opacity=0.7,
-                marker={
-                    'size': 15,
-                    'line': {'width': 0.5, 'color': 'white'}
-                },
-                name=i
-            ) for i in players.Position.unique()
-        ],
-        'layout': go.Layout(
-            xaxis={
-                'title': other_criteria,
-                'type': 'linear'
-            },
-            yaxis={
-                'title': criteria,
-                'type': 'linear'
-            },
-            legend={'x': 0, 'y': 1},
-            hovermode='closest',
-            title=title
-        )
-    }
+    title = v.team_detail_title(hoverData, criteria, other_criteria)
+
+    return g.update_detailed_team_graphs(players, other_criteria, criteria, title)
 
 
 # run webapp if main

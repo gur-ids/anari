@@ -17,3 +17,10 @@ def top_paid_points_text(top_paid_points, team_points):
         int(round(top_paid_points)),
         team_points,
     )
+
+
+def team_detail_title(hoverData, criteria, other_criteria):
+    return '<b>{0}</b><br>{1}'.format(
+        hoverData['points'][0]['text'] if hoverData is not None else 'Nashville Predators',
+        other_criteria + ', ' + criteria
+    )
