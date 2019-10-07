@@ -32,5 +32,6 @@ def offenders(pre_processed_data):
     pts_forward = df[(df['Position'] != 'D') & (df['GP'] >= 60)]
     return pts_forward
 
+
 def write_to_csv(df):
     df.to_csv('../data/preprocessed.csv')

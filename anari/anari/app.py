@@ -3,8 +3,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
+
 import graphs as g
-import pandas as pd
 import hockey_player_fun as hpf
 import hockey_player_model as hpm
 import team_model as tm
@@ -39,7 +39,7 @@ w_bottom_top_paid_points = hpf.points_share(w_bottom_top_paid_df, w_bottom_point
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.config['suppress_callback_exceptions']=True
+app.config['suppress_callback_exceptions'] = True
 app.layout = html.Div([
     html.H1(children='NHL meik mani'),
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
@@ -108,8 +108,10 @@ def render_content(tab):
             # TODO: top players
         ])
 
+
 def top_bottom_teams(teams):
-    return teams.sort_values(by = 'Points', ascending = False)
+    return teams.sort_values(by='Points', ascending=False)
+
 
 position_filter_data = [
     {'label': 'Center', 'value': 'C'},
@@ -166,13 +168,16 @@ def render_team_stats(tab):
             ], className="six columns")
         ], className="row")
 
-    ],style={'display': 'none' if tab != 'test' else 'block'})
+    ], style={'display': 'none' if tab != 'test' else 'block'})
+
 
 @app.callback(
     dash.dependencies.Output('teams_overview', 'figure'),
-    [dash.dependencies.Input('player_position_filter', 'value'),
-    dash.dependencies.Input('y_axis_condition', 'value'),
-    dash.dependencies.Input('agg_method', 'value')])
+    [
+        dash.dependencies.Input('player_position_filter', 'value'),
+        dash.dependencies.Input('y_axis_condition', 'value'),
+        dash.dependencies.Input('agg_method', 'value'),
+    ])
 def update_overview_team_graphs(player_positions, criteria, agg_method):
     teams_subset = top_bottom_teams(teams_df)
     players_of_team = tm.get_teams(df, teams_subset['Team'])
@@ -182,7 +187,7 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
     elif agg_method == 'variance':
         players_of_team = players_of_team.groupby('Team', as_index=False)[criteria].var()
 
-    teams_subset=teams_subset.merge(players_of_team, left_on='Team', right_on='Team')
+    teams_subset = teams_subset.merge(players_of_team, left_on='Team', right_on='Team')
     return {
         'data': [go.Scatter(
                     x=teams_subset['Points'],
@@ -196,32 +201,35 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
                         'line': {'width': 0.5, 'color': 'white'}
                     }
                 )],
-                'layout': go.Layout(
-                    xaxis={
-                        'title': 'Team points',
-                        'type': 'linear'
-                    },
-                    yaxis={
-                        'title': 'avg ' + criteria,
-                        'type': 'linear'
-                    },
-                    legend={'x': 0, 'y': 1},
-                    hovermode='closest'
-                )
-            }
+        'layout': go.Layout(
+            xaxis={
+                'title': 'Team points',
+                'type': 'linear'
+            },
+            yaxis={
+                'title': 'avg ' + criteria,
+                'type': 'linear'
+            },
+            legend={'x': 0, 'y': 1},
+            hovermode='closest'
+        )
+    }
+
 
 @app.callback(
     dash.dependencies.Output('team_details', 'figure'),
-    [dash.dependencies.Input('teams_overview', 'hoverData'),
-    dash.dependencies.Input('player_position_filter', 'value'),
-    dash.dependencies.Input('y_axis_condition', 'value'),
-    dash.dependencies.Input('x_axis_condition', 'value')])
+    [
+        dash.dependencies.Input('teams_overview', 'hoverData'),
+        dash.dependencies.Input('player_position_filter', 'value'),
+        dash.dependencies.Input('y_axis_condition', 'value'),
+        dash.dependencies.Input('x_axis_condition', 'value'),
+    ])
 def update_detailed_team_graphs(hoverData, player_positions, criteria, other_criteria):
-    team_name = hoverData['points'][0]['customdata'] if hoverData != None else 'NSH'
+    team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
     players = tm.get_team(df, team_name)
     players = players[players.Position.isin(player_positions)]
     title = '<b>{}</b><br>{}'.format(
-        hoverData['points'][0]['text'] if hoverData != None else 'Nashville Predators',
+        hoverData['points'][0]['text'] if hoverData is not None else 'Nashville Predators',
         other_criteria + ',' + criteria)
     return {
         'data': [
@@ -252,6 +260,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
             title=title
         )
     }
+
 
 # run webapp if main
 if __name__ == '__main__':
