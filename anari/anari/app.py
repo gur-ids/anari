@@ -109,24 +109,21 @@ def render_content(tab):
         ])
 
 def top_bottom_teams(teams):
-    teams = teams.sort_values(by = 'Points', ascending = False)
-    df = teams.head(10)
-    df = df.append(teams.tail(10))
-    return df
+    return teams.sort_values(by = 'Points', ascending = False)
 
 position_filter_data = [
-    {'label': 'center', 'value': 'C'},
-    {'label': 'defender', 'value': 'D'},
-    {'label': 'left', 'value': 'LW'},
-    {'label': 'right', 'value': 'RW'}
+    {'label': 'Center', 'value': 'C'},
+    {'label': 'Defence Man', 'value': 'D'},
+    {'label': 'Left Wing', 'value': 'LW'},
+    {'label': 'Right Wint', 'value': 'RW'}
 ]
 position_agg_method = [
     {'label': 'Mean', 'value': 'mean'},
     {'label': 'Variance', 'value': 'variance'}
 ]
 
-y_available_criterias = ['+/-', 'Age', 'Salary']
-x_available_criterias = ['+/-', 'Age', 'PTS']
+left_table_y_label = ['+/-', 'Age', 'Salary', 'TOI/GP', 'IPP%', 'PAX']
+right_table_x_label = ['+/-', 'Age', 'PTS', 'Cap Hit', 'TOI/GP', 'PAX', 'IPP%', 'Salary']
 
 @app.callback(Output('render_team_stats', 'children'),
               [Input('tabs', 'value')])
@@ -137,7 +134,7 @@ def render_team_stats(tab):
             html.Div([
                 dcc.Dropdown(
                     id='y_axis_condition',
-                    options=[{'label': i, 'value': i} for i in y_available_criterias],
+                    options=[{'label': i, 'value': i} for i in left_table_y_label],
                     value='+/-'),
                 dcc.Checklist(
                     id='player_position_filter',
@@ -155,7 +152,7 @@ def render_team_stats(tab):
             html.Div([
                 dcc.Dropdown(
                     id='x_axis_condition',
-                    options=[{'label': i, 'value': i} for i in x_available_criterias],
+                    options=[{'label': i, 'value': i} for i in right_table_x_label],
                     value='PTS')
             ], className="six columns")
         ], className="row"),
