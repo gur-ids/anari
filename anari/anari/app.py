@@ -36,8 +36,6 @@ app.layout=html.Div(children=[
     g.scatter_plot_players('test_id', top_players)
 ])
 '''
-test_df = pd.read_csv('../data/preprocessed2.csv')
-available_indicators = test_df['Indicator Name'].unique()
 app.suppress_callback_exceptions=True
 app.layout = html.Div([
     html.H1('Dash Tabs component demo'),
@@ -47,8 +45,7 @@ app.layout = html.Div([
         dcc.Tab(label='test', value='test')
     ]),
     html.Div(id='tabs-content-example'),
-    html.Div(id='tabs-content-example2'),
-    html.Div(id='tabs-content-example3')
+    html.Div(id='render_team_stats')
 ])
 
 @app.callback(Output('tabs-content-example', 'children'),
@@ -84,42 +81,123 @@ def top_bottom_teams(teams):
     df = df.append(teams.tail(5))
     return df
 
-teams_subset = top_bottom_teams(teams)
+position_filter_data = [
+    {'label': 'center', 'value': 'C'},
+    {'label': 'defender', 'value': 'D'},
+    {'label': 'left', 'value': 'LW'},
+    {'label': 'right', 'value': 'RW'}
+]
+position_agg_method = [
+    {'label': 'Mean', 'value': 'mean'},
+    {'label': 'Variance', 'value': 'variance'}
+]
 
-@app.callback(Output('tabs-content-example3', 'children'),
+y_available_criterias = ['+/-', 'Age', 'Salary']
+x_available_criterias = ['+/-', 'Age', 'PTS']
+
+@app.callback(Output('render_team_stats', 'children'),
               [Input('tabs-example', 'value')])
-def render_content3(tab):
+def render_team_stats(tab):
+
     return html.Div([
         html.Div([
-            dcc.Graph(
-                id='teams-details',
-                figure={
-                    'data': [{
-                        'x': teams_subset['Team'],
-                        'y': teams_subset['Points'],
-                        'type': 'bar'
-                    }]
-                },
-                #hoverData={'points': [{'customdata': 'Japan'}]}
-            )
-        ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
+            html.Div([
+                dcc.Dropdown(
+                    id='y_axis_condition',
+                    options=[{'label': i, 'value': i} for i in y_available_criterias],
+                    value='+/-'),
+                dcc.Checklist(
+                    id='player_position_filter',
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in position_filter_data],
+                    value=['C', 'D', 'LW', 'RW'],
+                    labelStyle={'display': 'inline-block'}
+                ),
+                dcc.RadioItems(
+                    id='agg_method',
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in position_agg_method],
+                    value='mean',
+                    labelStyle={'display': 'inline-block'}
+                )
+            ], className="six columns"),
+            html.Div([
+                dcc.Dropdown(
+                    id='x_axis_condition',
+                    options=[{'label': i, 'value': i} for i in x_available_criterias],
+                    value='PTS')
+            ], className="six columns")
+        ], className="row"),
         html.Div([
-            dcc.Graph(id='team-details'),dcc.Graph(id='team-details')
-        ], style={'display': 'inline-block', 'width': '49%'}),
+            html.Div([
+                dcc.Graph(id='teams_overview'),
+            ], className="six columns"),
+
+            html.Div([
+                dcc.Graph(id='team_details')
+            ], className="six columns")
+        ], className="row")
+
     ],style={'display': 'none' if tab != 'test' else 'block'})
 
 @app.callback(
-    dash.dependencies.Output('team-details', 'figure'),
-    [dash.dependencies.Input('teams-details', 'hoverData')])
-def update_detailed_team_graphs(hoverData):
-    team_name = hoverData['points'][0]['x']
+    dash.dependencies.Output('teams_overview', 'figure'),
+    [dash.dependencies.Input('player_position_filter', 'value'),
+    dash.dependencies.Input('y_axis_condition', 'value'),
+    dash.dependencies.Input('agg_method', 'value')])
+def update_overview_team_graphs(player_positions, criteria, agg_method):
+    teams_subset = top_bottom_teams(teams)
+    players_of_team = tm.get_teams(df, teams_subset['Team'])
+    players_of_team = players_of_team[players_of_team.Position.isin(player_positions)]
+    if agg_method == 'mean':
+        players_of_team = players_of_team.groupby('Team', as_index=False)[criteria].mean()
+    elif agg_method == 'variance':
+        players_of_team = players_of_team.groupby('Team', as_index=False)[criteria].var()
+
+    teams_subset=teams_subset.merge(players_of_team, left_on='Team', right_on='Team')
+    return {
+        'data': [go.Scatter(
+                    x=teams_subset['Points'],
+                    y=teams_subset[criteria],
+                    text=teams_subset['Team Name'],
+                    customdata=teams_subset['Team'],
+                    mode='markers',
+                    marker={
+                        'size': 15,
+                        'opacity': 0.5,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    }
+                )],
+                'layout': go.Layout(
+                    xaxis={
+                        'title': 'Team points',
+                        'type': 'linear'
+                    },
+                    yaxis={
+                        'title': 'avg ' + criteria,
+                        'type': 'linear'
+                    },
+                    legend={'x': 0, 'y': 1},
+                    hovermode='closest'
+                )
+            }
+
+@app.callback(
+    dash.dependencies.Output('team_details', 'figure'),
+    [dash.dependencies.Input('teams_overview', 'hoverData'),
+    dash.dependencies.Input('player_position_filter', 'value'),
+    dash.dependencies.Input('y_axis_condition', 'value'),
+    dash.dependencies.Input('x_axis_condition', 'value')])
+def update_detailed_team_graphs(hoverData, player_positions, criteria, other_criteria):
+    team_name = hoverData['points'][0]['customdata'] if hoverData != None else 'NSH'
     players = tm.get_team(df, team_name)
-    #title = '<b>{}</b><br>{Callback}'.format(team_name)
+    players = players[players.Position.isin(player_positions)]
+    title = '<b>{}</b><br>{}'.format(
+        hoverData['points'][0]['text'] if hoverData != None else 'Nashville Predators',
+        other_criteria + ',' + criteria)
     return {
         'data': [
             go.Scatter(
-                x=players[players['Position'] == i]['GP'],
-                y=players[players['Position'] == i]['PTS'],
+                x=players[players['Position'] == i][other_criteria],
+                y=players[players['Position'] == i][criteria],
                 text=players[players['Position'] == i]['Last Name'],
                 mode='markers',
                 opacity=0.7,
@@ -132,162 +210,18 @@ def update_detailed_team_graphs(hoverData):
         ],
         'layout': go.Layout(
             xaxis={
-                'title': 'xtitle',
+                'title': other_criteria,
                 'type': 'linear'
             },
             yaxis={
-                'title': 'ytitle',
+                'title': criteria,
                 'type': 'linear'
             },
             legend={'x': 0, 'y': 1},
-            margin={'l': 40, 'b': 30, 't': 10, 'r': 0},
-            height=450,
-            hovermode='closest'
+            hovermode='closest',
+            title=title
         )
     }
-
-def is_test_tab_showing(tab):
-        if tab != 'test':
-            return 'none'
-        return 'block'
-
-@app.callback(Output('tabs-content-example2', 'children'),
-              [Input('tabs-example', 'value')])
-def render_content2(tab):
-    return html.Div([
-        html.Div([
-            dcc.Dropdown(
-                id='crossfilter-xaxis-column',
-                options=[{'label': i, 'value': i} for i in available_indicators],
-                value='Fertility rate, total (births per woman)'
-            ),
-            dcc.RadioItems(
-                id='crossfilter-xaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'}
-            )
-        ],
-        style={'width': '49%', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Dropdown(
-                id='crossfilter-yaxis-column',
-                options=[{'label': i, 'value': i} for i in available_indicators],
-                value='Life expectancy at birth, total (years)'
-            ),
-            dcc.RadioItems(
-                id='crossfilter-yaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'}
-            )
-        ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'}),
-        html.Div([
-            dcc.Graph(
-                id='crossfilter-indicator-scatter',
-                hoverData={'points': [{'customdata': 'Japan'}]}
-            )
-        ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
-        html.Div([
-            dcc.Graph(id='x-time-series'),
-            dcc.Graph(id='y-time-series'),
-        ], style={'display': 'inline-block', 'width': '49%'}),
-
-        html.Div(dcc.Slider(
-            id='crossfilter-year--slider',
-            min=test_df['Year'].min(),
-            max=test_df['Year'].max(),
-            value=test_df['Year'].max(),
-            marks={str(year): str(year) for year in test_df['Year'].unique()}
-        ), style={'width': '49%', 'padding': '0px 20px 20px 20px'})
-        ],
-        style={'display': is_test_tab_showing(tab)})
-
-@app.callback(
-    dash.dependencies.Output('crossfilter-indicator-scatter', 'figure'),
-    [dash.dependencies.Input('crossfilter-xaxis-column', 'value'),
-    dash.dependencies.Input('crossfilter-yaxis-column', 'value'),
-    dash.dependencies.Input('crossfilter-xaxis-type', 'value'),
-    dash.dependencies.Input('crossfilter-yaxis-type', 'value'),
-    dash.dependencies.Input('crossfilter-year--slider', 'value')])
-def update_graph(xaxis_column_name, yaxis_column_name,
-                xaxis_type, yaxis_type,
-                year_value):
-    dff = test_df[test_df['Year'] == year_value]
-
-    return {
-        'data': [go.Scatter(
-            x=dff[dff['Indicator Name'] == xaxis_column_name]['Value'],
-            y=dff[dff['Indicator Name'] == yaxis_column_name]['Value'],
-            text=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'],
-            customdata=dff[dff['Indicator Name'] == yaxis_column_name]['Country Name'],
-            mode='markers',
-            marker={
-                'size': 15,
-                'opacity': 0.5,
-                'line': {'width': 0.5, 'color': 'white'}
-        }
-        )],
-        'layout': go.Layout(
-            xaxis={
-                'title': xaxis_column_name,
-                'type': 'linear'
-            },
-            yaxis={
-                'title': yaxis_column_name,
-                'type': 'linear'
-            },
-            margin={'l': 40, 'b': 30, 't': 10, 'r': 0},
-            height=450,
-            hovermode='closest'
-        )
-    }
-
-def create_time_series(dff, axis_type, title):
-    return {
-        'data': [go.Scatter(
-            x=dff['Year'],
-            y=dff['Value'],
-            mode='lines+markers'
-        )],
-        'layout': {
-            'height': 225,
-            'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10},
-            'annotations': [{
-                'x': 0, 'y': 0.85, 'xanchor': 'left', 'yanchor': 'bottom',
-                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
-                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
-                'text': title
-            }],
-            'yaxis': {'type': 'linear'},
-            'xaxis': {'showgrid': False}
-        }
-    }
-@app.callback(
-    dash.dependencies.Output('x-time-series', 'figure'),
-    [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
-    dash.dependencies.Input('crossfilter-xaxis-column', 'value'),
-    dash.dependencies.Input('crossfilter-xaxis-type', 'value')])
-def update_y_timeseries(hoverData, xaxis_column_name, axis_type):
-    country_name = hoverData['points'][0]['customdata']
-    print(hoverData)
-    dff = test_df[test_df['Country Name'] == country_name]
-    dff = dff[dff['Indicator Name'] == xaxis_column_name]
-    title = '<b>{}</b><br>{}'.format(country_name, xaxis_column_name)
-    return create_time_series(dff, axis_type, title)
-
-
-@app.callback(
-    dash.dependencies.Output('y-time-series', 'figure'),
-    [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
-    dash.dependencies.Input('crossfilter-yaxis-column', 'value'),
-    dash.dependencies.Input('crossfilter-yaxis-type', 'value')])
-def update_x_timeseries(hoverData, yaxis_column_name, axis_type):
-    dff = test_df[test_df['Country Name'] == hoverData['points'][0]['customdata']]
-    dff = dff[dff['Indicator Name'] == yaxis_column_name]
-    return create_time_series(dff, axis_type, yaxis_column_name)
-
-
 
 # run webapp if main
 if __name__ == '__main__':
