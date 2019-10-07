@@ -1,4 +1,5 @@
 import pandas as pd
+
 from columns_to_remove import columns_to_remove
 
 
@@ -30,9 +31,6 @@ def offenders(pre_processed_data):
     df = pre_processed_data
     pts_forward = df[(df['Position'] != 'D') & (df['GP'] >= 60)]
     return pts_forward
-
-def defenders(df):
-    return df.loc[df['Position'] == 'D']
 
 def write_to_csv(df):
     df.to_csv('../data/preprocessed.csv')

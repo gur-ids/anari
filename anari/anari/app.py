@@ -1,77 +1,112 @@
 import dash
-import dash_html_components as html
-import hockey_player_model as hpm
-import hockey_player_fun as hpf
-import graphs as g
-import view as v
-import pandas as pd
-import team_model as tm
 import dash_core_components as dcc
-from dash.dependencies import Input, Output
+import dash_html_components as html
 import plotly.graph_objs as go
+from dash.dependencies import Input, Output
+import graphs as g
+import pandas as pd
+import hockey_player_fun as hpf
+import hockey_player_model as hpm
+import team_model as tm
+import view as v
+from notes import notes
 
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
-teams = tm.pre_process('../data/team_stats_2017-2018.csv')
+teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
-offenders = hpm.offenders(df)
+forwards_df = hpf.forwards_by_gp(df, 60)
+top_players_df = hpf.filter_players_by_points(df, 50)
 
+w_top_df = tm.get_team(df, 'NSH')
+w_bottom_df = tm.get_team(df, 'COL')
+w_out_df = tm.get_team(df, 'STL')
 
-top_players = hpf.filter_players_by_points(df, 50)
+w_top_name = tm.get_team_full_name(teams_df, 'NSH')
+w_bottom_name = tm.get_team_full_name(teams_df, 'COL')
+w_out_name = tm.get_team_full_name(teams_df, 'STL')
+
+max_cap_hit = tm.get_max_cap_hit()
+
+w_bottom_top_paid_df = hpf.top_paid_players(w_bottom_df)
+w_bottom_cap_hit = tm.get_team_total_cap_hit(w_bottom_df)
+w_bottom_top_paid_cap_hit = hpf.cap_hit_share(w_bottom_top_paid_df, w_bottom_cap_hit)
+w_bottom_top_paid_cap_hit_total = hpf.cap_hit_share(w_bottom_top_paid_df, max_cap_hit)
+w_bottom_points = tm.get_team_total_points(w_bottom_df)
+w_bottom_top_paid_points = hpf.points_share(w_bottom_top_paid_df, w_bottom_points)
 
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions']=True
-'''
-app.layout=html.Div(children=[
-    html.H4(children='NHL meik mani'),
-    html.P('Here is a table of the top scorers'),
-    html.P(children=v.top_players_gp_mean_text(top_players)),
-    g.box_plot_by_points(offenders),
-    g.scatter_plot_teams('test_id2', teams),
-    g.scatter_plot_players('test_id', top_players)
-])
-'''
-app.suppress_callback_exceptions=True
 app.layout = html.Div([
-    html.H1('Dash Tabs component demo'),
-    dcc.Tabs(id="tabs-example", value='basic-info-tab', children=[
+    html.H1(children='NHL meik mani'),
+    dcc.Tabs(id="tabs", value='basic-info-tab', children=[
         dcc.Tab(label='Basic Info', value='basic-info-tab'),
         dcc.Tab(label='Make statistics great again', value='great-stat-tab'),
         dcc.Tab(label='test', value='test')
     ]),
-    html.Div(id='tabs-content-example'),
+    html.Div(id='tabs-content'),
     html.Div(id='render_team_stats')
 ])
 
-@app.callback(Output('tabs-content-example', 'children'),
-              [Input('tabs-example', 'value')])
+@app.callback(Output('tabs-content', 'children'),
+              [Input('tabs', 'value')])
 def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
-            html.H4(children='NHL meik mani'),
-            html.P('Here is a table of the top scorers'),
-            html.P(children=v.top_players_gp_mean_text(top_players)),
-            g.box_plot_by_points(offenders),
-            g.scatter_plot_teams('test_id2', teams),
-            g.scatter_plot_players('test_id', top_players)
+            g.box_plot_by_points(forwards_df),
+            g.scatter_plot_teams('test_id2', teams_df),
+            g.scatter_plot_toi_pts('toi_pts', top_players_df)
         ])
     elif tab == 'great-stat-tab':
+
+        team_trace_w_top = go.Histogram(
+                x=w_top_df['Cap Hit'],
+        )
+
+        team_trace_out = go.Histogram(
+                x=w_out_df['Cap Hit'],
+        )
+
         return html.Div([
-            html.H3('Tab content 2'),
+            dcc.Markdown(notes),
+            html.H1(children='Western Conference'),
+
+            # TODO: use functions
+            html.H2(children=w_top_name),
             dcc.Graph(
-                id='graph-2-tabs',
                 figure={
-                    'data': [{
-                        'x': teams['Team'],
-                        'y': teams['Points'],
-                        'type': 'bar'
-                    }]
+                    'data': [team_trace_w_top],
+                    'layout': {
+                        'title': 'Cap Hit distribution',
+                    },
                 }
-            )
-        ])        
+            ),
+            # TODO: top players
+
+            html.H2(children=w_bottom_name),
+            g.cap_hit_distribution(w_bottom_df),
+            g.generate_table(w_bottom_top_paid_df),
+            html.Div([
+                html.P(v.top_paid_cap_hit_text(w_bottom_top_paid_cap_hit, w_bottom_cap_hit)),
+                html.P(v.top_paid_max_cap_hit_text(w_bottom_top_paid_cap_hit_total, max_cap_hit)),
+                html.P(v.top_paid_points_text(w_bottom_top_paid_points, w_bottom_points)),
+            ]),
+
+            # TODO: use functions
+            html.H2(children=w_out_name),
+            dcc.Graph(
+                figure={
+                    'data': [team_trace_out],
+                    'layout': {
+                        'title': 'Cap Hit distribution',
+                    },
+                }
+            ),
+            # TODO: top players
+        ])
 
 def top_bottom_teams(teams):
     teams = teams.sort_values(by = 'Points', ascending = False)
@@ -94,7 +129,7 @@ y_available_criterias = ['+/-', 'Age', 'Salary']
 x_available_criterias = ['+/-', 'Age', 'PTS']
 
 @app.callback(Output('render_team_stats', 'children'),
-              [Input('tabs-example', 'value')])
+              [Input('tabs', 'value')])
 def render_team_stats(tab):
 
     return html.Div([
@@ -142,7 +177,7 @@ def render_team_stats(tab):
     dash.dependencies.Input('y_axis_condition', 'value'),
     dash.dependencies.Input('agg_method', 'value')])
 def update_overview_team_graphs(player_positions, criteria, agg_method):
-    teams_subset = top_bottom_teams(teams)
+    teams_subset = top_bottom_teams(teams_df)
     players_of_team = tm.get_teams(df, teams_subset['Team'])
     players_of_team = players_of_team[players_of_team.Position.isin(player_positions)]
     if agg_method == 'mean':

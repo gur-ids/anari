@@ -15,40 +15,83 @@ def generate_table(dataframe, max_rows=10):
     )
 
 
-def box_plot_by_points(players):
-    return dcc.Graph(figure={'data': [go.Box(y=players['PTS'])]})
+def box_plot_by_points(df):
+    trace = go.Box(
+        y=df['PTS'],
+        name='Forwards',
+    )
+
+    return dcc.Graph(
+        figure={
+            'data': [trace],
+            'layout': {
+                'title': 'Points distribution of forwards with >= 60 games played',
+            }
+        }
+    )
 
 
-def scatter_plot_players(plot_id, players):
+def scatter_plot_toi_pts(plot_id, df):
+    traces = []
+
+    for i in df.Position.unique():
+        # Marker size
+        # https://plot.ly/python/bubble-charts/#scaling-the-size-of-bubble-charts
+        df_by_position = df[df['Position'] == i]
+        size = df_by_position['Cap Hit']
+        sizeref = 2.*max(size)/(20.**2)
+
+        text = df[df['Position'] == i]['H-Ref Name']
+
+        traces.append(go.Scatter(
+            x=df[df['Position'] == i]['TOI/GP'],
+            y=df[df['Position'] == i]['PTS'],
+            text=text,
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': size,
+                'sizeref': sizeref,
+                'sizemode': 'area',
+                'sizemin': 4,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+
     return dcc.Graph(
         id=plot_id,
         figure={
-            'data': [
-                go.Scatter(
-                    x=players[players['Position'] == i]['GP'],
-                    y=players[players['Position'] == i]['PTS'],
-                    text=players[players['Position'] == i]['Last Name'],
-                    mode='markers',
-                    opacity=0.7,
-                    marker={
-                        'size': 15,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    },
-                    name=i
-                ) for i in players.Position.unique()
-            ],
+            'data': traces,
             'layout': go.Layout(
-                xaxis={'type': 'log', 'title': 'Games played'},
+                xaxis={'type': 'log', 'title': 'Time on ice per game'},
                 yaxis={'title': 'Points scored'},
-                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                 legend={'x': 0, 'y': 1},
-                hovermode='closest'
+                hovermode='closest',
+                title='Ice time and points (>= 50)',
             )
         }
     )
 
+
+def cap_hit_distribution(df):
+    trace = go.Histogram(
+        x=df['Cap Hit'],
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': [trace],
+                'layout': {
+                    'title': 'Cap Hit distribution',
+                },
+            }
+        )
+    )
+
+
 def scatter_plot_teams(plot_id, teams):
-    #print(teams.head(1))
     return dcc.Graph(
         id=plot_id,
         figure={
