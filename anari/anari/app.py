@@ -45,7 +45,7 @@ app.layout = html.Div([
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
         dcc.Tab(label='Basic Info', value='basic-info-tab'),
         dcc.Tab(label='Make statistics great again', value='great-stat-tab'),
-        dcc.Tab(label='test', value='test')
+        dcc.Tab(label='Team stats', value='team-stats')
     ]),
     html.Div(id='tabs-content'),
     html.Div(id='render_team_stats')
@@ -163,7 +163,7 @@ def render_team_stats(tab):
             ], className="six columns")
         ], className="row")
 
-    ], style={'display': 'none' if tab != 'test' else 'block'})
+    ], style={'display': 'none' if tab != 'team-stats' else 'block'})
 
 
 @app.callback(
