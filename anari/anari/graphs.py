@@ -91,38 +91,6 @@ def cap_hit_distribution(df):
     )
 
 
-def scatter_plot_teams(plot_id, df):
-    traces = []
-
-    for i in df.Team.unique():
-        traces.append(go.Scatter(
-            x=df[df['Team'] == i]['Rank'],
-            y=df[df['Team'] == i]['Team'],
-            text=df[df['Team'] == i]['Team'],
-            mode='markers',
-            opacity=0.7,
-            marker={
-                'size': 15,
-                'line': {'width': 0.5, 'color': 'white'}
-            },
-            name=i
-        ))
-
-    return dcc.Graph(
-        id=plot_id,
-        figure={
-            'data': traces,
-            'layout': go.Layout(
-                xaxis={'type': 'log', 'title': 'avg pts'},
-                yaxis={'title': 'team name'},
-                margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
-                legend={'x': 0, 'y': 1},
-                hovermode='closest'
-            )
-        }
-    )
-
-
 def update_overview_team_graphs(df, y_value):
     trace = go.Scatter(
         x=df['Points'],
