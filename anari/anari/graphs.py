@@ -25,7 +25,7 @@ def box_plot_by_points(df):
         figure={
             'data': [trace],
             'layout': {
-                'title': 'Points distribution of forwards with >= 60 games played',
+                'title': 'Points distribution of players with Cap Hit >= $4M',
             }
         }
     )

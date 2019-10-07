@@ -16,7 +16,6 @@ df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
-forwards_df = hpf.forwards_by_gp(df, 60)
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
 
 w_top_df = tm.get_team(df, 'NSH')
@@ -56,7 +55,7 @@ app.layout = html.Div([
 def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
-            g.box_plot_by_points(forwards_df),
+            g.box_plot_by_points(top_players_df),
             g.scatter_plot_toi_pts('toi_pts', top_players_df)
         ])
     elif tab == 'great-stat-tab':
