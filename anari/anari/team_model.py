@@ -13,6 +13,3 @@ def get_teams(df, team_names):
 
 def get_team_avg_scores(df): 
     return df.groupby(['Team'], as_index = False).mean()
-
-def is_beneficial_to_team(df): 
-    return df.groupby('Team', as_index=False)['+/-'].mean()

@@ -16,8 +16,6 @@ teams = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
 offenders = hpm.offenders(df)
-defenders = hpm.defenders(df)
-tm.is_beneficial_to_team(df)
 
 
 top_players = hpf.filter_players_by_points(df, 50)
@@ -77,8 +75,8 @@ def render_content(tab):
 
 def top_bottom_teams(teams):
     teams = teams.sort_values(by = 'Points', ascending = False)
-    df = teams.head(5)
-    df = df.append(teams.tail(5))
+    df = teams.head(10)
+    df = df.append(teams.tail(10))
     return df
 
 position_filter_data = [
