@@ -39,7 +39,7 @@ def scatter_plot_toi_pts(plot_id, df):
         # https://plot.ly/python/bubble-charts/#scaling-the-size-of-bubble-charts
         df_by_position = df[df['Position'] == i]
         size = df_by_position['Cap Hit']
-        sizeref = 2.*max(size)/(20.**2)
+        sizeref = 2.*max(size)/(15.**2)
 
         text = df[df['Position'] == i]['H-Ref Name']
 
@@ -68,7 +68,7 @@ def scatter_plot_toi_pts(plot_id, df):
                 yaxis={'title': 'Points scored'},
                 legend={'x': 0, 'y': 1},
                 hovermode='closest',
-                title='Ice time and points (>= 50)',
+                title='Ice time and points (Cap Hit >= $4M)',
             )
         }
     )

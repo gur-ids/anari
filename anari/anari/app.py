@@ -17,7 +17,7 @@ teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 # handling pre-processed data
 forwards_df = hpf.forwards_by_gp(df, 60)
-top_players_df = hpf.filter_players_by_points(df, 50)
+top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
 
 w_top_df = tm.get_team(df, 'NSH')
 w_bottom_df = tm.get_team(df, 'COL')

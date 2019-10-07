@@ -1,5 +1,6 @@
-def filter_players_by_points(players, min_points):
-    return players.loc[players['PTS'] >= min_points]
+def filter_players_by(players, column, value):
+    return players.loc[players[column] >= value]
+
 
 def top_paid_players(df):
     top_three = df.sort_values(by=['Cap Hit'], ascending=False).head(3)
