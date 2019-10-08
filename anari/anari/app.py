@@ -13,8 +13,8 @@ from notes import notes
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
-df2016 = hpm.pre_process2016('../data/NHL_2016-17.csv')
-print(df2016.head())
+
+df_2016 = hpm.pre_process_2016('../data/NHL_2016-17.csv')
 
 # handling pre-processed data
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)

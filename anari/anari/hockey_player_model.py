@@ -1,6 +1,20 @@
+from datetime import datetime
+
 import pandas as pd
 
 from columns_to_remove import columns_to_remove
+
+COLUMNS_TO_INCLUDE_2016 = [
+    'Born',
+    'Position',
+    'GP',
+    'G',
+    'A',
+    'PTS',
+    '+/-',
+    'TOI/GP',
+    'IPP%',
+]
 
 
 def remove_columns(df):
@@ -26,10 +40,24 @@ def pre_process(path):
     df.sort_values(by=['Team'], inplace=True)
     return df
 
-def pre_process2016(path):
-    df2016 = pd.read_csv(path, header=2)
-    df2016 = df2016.filter(items=['Born', 'Seasons', 'Position', 'G', 'A', 'PTS', 'PTS/GP', 'PAX', '+/-', 'TOI/GP', 'IPP%'])
-    return df2016
+
+def format_columns_2016(df):
+    # TODO: Seasons, PAX
+    df = df.rename(columns={'Born': 'Age'})
+    df['PTS/GP'] = df['PTS'] / df['GP']
+    return df
+
+
+def born_to_age(yyy_mm_dd):
+    born_year = datetime.strptime(yyy_mm_dd, '%Y-%m-%d').strftime('%Y')
+    return 2016 - int(born_year)
+
+
+def pre_process_2016(path):
+    df = pd.read_csv(path, header=2, usecols=COLUMNS_TO_INCLUDE_2016, converters={'Born': born_to_age})
+    df = format_columns_2016(df)
+    return df
+
 
 def offenders(pre_processed_data):
     df = pre_processed_data
