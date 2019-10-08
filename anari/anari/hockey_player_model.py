@@ -60,8 +60,21 @@ def born_to_age(yyy_mm_dd):
     return 2016 - int(born_year)
 
 
+def parse_position(position):
+    if 'C' in position:
+        position = 'C'
+    elif 'D' in position:
+        position = 'D'
+    return position
+
+
 def pre_process_2016(path, df_2017):
-    df = pd.read_csv(path, header=2, usecols=COLUMNS_TO_INCLUDE_2016, converters={'Born': born_to_age})
+    df = pd.read_csv(
+        path,
+        header=2,
+        usecols=COLUMNS_TO_INCLUDE_2016,
+        converters={'Born': born_to_age, 'Position': parse_position}
+    )
     df = format_columns_2016(df, df_2017)
     return df
 
