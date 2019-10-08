@@ -17,6 +17,10 @@ COLUMNS_TO_INCLUDE_2016 = [
     'IPP%',
 ]
 
+NA_VALUES_2016 = ['#DIV/0!']
+
+# TODO: For data scheisse: fillna, remove NHLid
+
 
 def remove_columns(df):
     return df.drop(columns=columns_to_remove)
@@ -68,12 +72,20 @@ def parse_position(position):
     return position
 
 
+def parse_ipp(ipp):
+    return float(ipp.strip('%'))
+
+
 def pre_process_2016(path, df_2017):
     df = pd.read_csv(
         path,
         header=2,
         usecols=COLUMNS_TO_INCLUDE_2016,
-        converters={'Born': born_to_age, 'Position': parse_position}
+        na_values=NA_VALUES_2016,
+        converters={'Born': born_to_age, 'Position': parse_position, 'IPP%': parse_ipp},
+        # Run na_values first, then converters
+        # https://github.com/pandas-dev/pandas/issues/13302
+        engine='python',
     )
     df = format_columns_2016(df, df_2017)
     return df
