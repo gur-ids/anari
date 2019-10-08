@@ -59,7 +59,7 @@ def format_columns_2016(df, df_2017):
     return df
 
 
-def born_to_age(yyy_mm_dd):
+def parse_born(yyy_mm_dd):
     born_year = datetime.strptime(yyy_mm_dd, '%Y-%m-%d').strftime('%Y')
     return 2016 - int(born_year)
 
@@ -82,7 +82,7 @@ def pre_process_2016(path, df_2017):
         header=2,
         usecols=COLUMNS_TO_INCLUDE_2016,
         na_values=NA_VALUES_2016,
-        converters={'Born': born_to_age, 'Position': parse_position, 'IPP%': parse_ipp},
+        converters={'Born': parse_born, 'Position': parse_position, 'IPP%': parse_ipp},
         # Run na_values first, then converters
         # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
