@@ -49,7 +49,6 @@ def fill_seasons(x, df_2017):
 
 
 def format_columns_2016(df, df_2017):
-    # TODO: PAX
     df = df.rename(columns={'Born': 'Age'})
     df['PTS/GP'] = df['PTS'] / df['GP']
     df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2017,))

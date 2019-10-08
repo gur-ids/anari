@@ -9,6 +9,7 @@ columns_to_remove = [
         'CorsicaID',
         'A1',
         'Gap',
+        'PAX',
         'GC',
         'E+/-',
         'Shifts',

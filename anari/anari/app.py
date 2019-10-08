@@ -59,8 +59,8 @@ position_agg_method = [
     {'label': 'Sum', 'value': 'sum'},
 ]
 
-left_table_y_label = ['+/-', 'Age', 'Salary', 'Cap Hit', 'TOI/GP', 'IPP%', 'PAX']
-right_table_x_label = ['+/-', 'Age', 'PTS', 'Cap Hit', 'TOI/GP', 'PAX', 'IPP%', 'Salary']
+left_table_y_label = ['+/-', 'Age', 'Salary', 'Cap Hit', 'TOI/GP', 'IPP%']
+right_table_x_label = ['+/-', 'Age', 'PTS', 'Cap Hit', 'TOI/GP', 'IPP%', 'Salary']
 
 @app.callback(Output('render_team_stats', 'children'),
               [Input('tabs', 'value')])
