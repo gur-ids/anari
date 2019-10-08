@@ -6,6 +6,7 @@ from columns_to_remove import columns_to_remove
 
 COLUMNS_TO_INCLUDE_2016 = [
     'Born',
+    'NHLid',
     'Position',
     'GP',
     'G',
@@ -41,10 +42,17 @@ def pre_process(path):
     return df
 
 
-def format_columns_2016(df):
-    # TODO: Seasons, PAX
+def fill_seasons(x, df_2017):
+    # Impute Season: 1 if player did not play following season
+    seasons_2017 = df_2017.loc[df_2017['NHLid'] == x, 'Seasons']
+    return seasons_2017.iloc[0] - 1 if not seasons_2017.empty else 1
+
+
+def format_columns_2016(df, df_2017):
+    # TODO: PAX
     df = df.rename(columns={'Born': 'Age'})
     df['PTS/GP'] = df['PTS'] / df['GP']
+    df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2017,))
     return df
 
 
@@ -53,9 +61,9 @@ def born_to_age(yyy_mm_dd):
     return 2016 - int(born_year)
 
 
-def pre_process_2016(path):
+def pre_process_2016(path, df_2017):
     df = pd.read_csv(path, header=2, usecols=COLUMNS_TO_INCLUDE_2016, converters={'Born': born_to_age})
-    df = format_columns_2016(df)
+    df = format_columns_2016(df, df_2017)
     return df
 
 
