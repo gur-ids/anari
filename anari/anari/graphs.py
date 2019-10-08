@@ -92,21 +92,25 @@ def cap_hit_distribution(df):
 
 
 def update_overview_team_graphs(df, y_value):
-    trace = go.Scatter(
-        x=df['Points'],
-        y=df[y_value],
-        text=df['Team Name'],
-        customdata=df['Team'],
-        mode='markers',
-        marker={
-            'size': 15,
-            'opacity': 0.5,
-            'line': {'width': 0.5, 'color': 'white'}
-        }
-    )
+    traces = []
+
+    for i in df.Playoffs.unique():
+        traces.append(go.Scatter(
+            x=df[df['Playoffs'] == i]['Points'],
+            y=df[df['Playoffs'] == i][y_value],
+            text=df[df['Playoffs'] == i]['Team Name'],
+            customdata=df['Team'],
+            mode='markers',
+            marker={
+                'size': 15,
+                'opacity': 0.5,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name='Made the playoffs' if i else 'Did not make the playoffs'
+        ))
 
     return {
-        'data': [trace],
+        'data': traces,
         'layout': go.Layout(
             xaxis={
                 'title': 'Team points',

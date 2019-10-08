@@ -44,7 +44,7 @@ app.layout = html.Div([
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
         dcc.Tab(label='Basic Info', value='basic-info-tab'),
         dcc.Tab(label='Make statistics great again', value='great-stat-tab'),
-        dcc.Tab(label='Team stats', value='team-stats')
+        dcc.Tab(label='Team stats', value='team-stats'),
     ]),
     html.Div(id='tabs-content'),
     html.Div(id='render_team_stats')
