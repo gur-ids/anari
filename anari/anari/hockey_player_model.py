@@ -19,7 +19,12 @@ COLUMNS_TO_INCLUDE_2016 = [
 
 NA_VALUES_2016 = ['#DIV/0!']
 
-# TODO: For data scheisse: fillna, remove NHLid
+# TODO For data scheisse part in linear regression:
+#
+#  - filter 2017-2018 columns: df.filter(items=COLUMNS_TO_INCLUDE_2016)
+#  - fillna(?)
+#  - remove NHLid
+#  - perhaps add 2015-2016 season
 
 
 def remove_columns(df):
