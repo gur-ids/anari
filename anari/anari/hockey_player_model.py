@@ -26,6 +26,10 @@ def pre_process(path):
     df.sort_values(by=['Team'], inplace=True)
     return df
 
+def pre_process2016(path):
+    df2016 = pd.read_csv(path, header=2)
+    df2016 = df2016.filter(items=['Born', 'Seasons', 'Position', 'G', 'A', 'PTS', 'PTS/GP', 'PAX', '+/-', 'TOI/GP', 'IPP%'])
+    return df2016
 
 def offenders(pre_processed_data):
     df = pre_processed_data
