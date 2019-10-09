@@ -30,7 +30,6 @@ app.layout = html.Div([
         dcc.Tab(label='Team stats', value='team-stats'),
     ]),
     html.Div(id='tabs-content'),
-    html.Div(id='render_team_stats')
 ])
 
 @app.callback(Output('tabs-content', 'children'),
@@ -42,6 +41,8 @@ def render_content(tab):
             g.scatter_plot_toi_pts('toi_pts', top_players_df),
             dcc.Markdown(notes),
         ])
+    elif tab == 'team-stats':
+        return html.Div(id='render_team_stats')
 
 
 position_filter_data = [
