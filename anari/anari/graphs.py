@@ -82,7 +82,7 @@ def update_overview_team_graphs(df, y_value):
             x=df[df['Playoffs'] == i]['Points'],
             y=df[df['Playoffs'] == i][y_value],
             text=df[df['Playoffs'] == i]['Team Name'],
-            customdata=df['Team'],
+            customdata=df[df['Playoffs'] == i]['Team'],
             mode='markers',
             marker={
                 'size': 15,
