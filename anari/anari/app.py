@@ -91,7 +91,7 @@ def render_team_stats(tab):
 
         html.Div([
             html.Div([
-                dcc.Graph(id='teams_overview'),
+                dcc.Graph(id='teams-overview'),
             ], className="six columns"),
 
             html.Div(
@@ -108,7 +108,7 @@ def render_team_stats(tab):
 
 
 @app.callback(
-    dash.dependencies.Output('teams_overview', 'figure'),
+    dash.dependencies.Output('teams-overview', 'figure'),
     [
         dash.dependencies.Input('player_position_filter', 'value'),
         dash.dependencies.Input('y_axis_condition', 'value'),
@@ -136,7 +136,7 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
         Output('team-details-top-paid', 'children'),
     ],
     [
-        Input('teams_overview', 'hoverData'),
+        Input('teams-overview', 'hoverData'),
         Input('player_position_filter', 'value'),
         Input('y_axis_condition', 'value'),
         Input('x_axis_condition', 'value'),
