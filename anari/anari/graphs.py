@@ -74,23 +74,6 @@ def scatter_plot_toi_pts(plot_id, df):
     )
 
 
-def cap_hit_distribution(df):
-    trace = go.Histogram(
-        x=df['Cap Hit'],
-    )
-
-    return (
-        dcc.Graph(
-            figure={
-                'data': [trace],
-                'layout': {
-                    'title': 'Cap Hit distribution',
-                },
-            }
-        )
-    )
-
-
 def update_overview_team_graphs(df, y_value):
     traces = []
 
@@ -143,32 +126,38 @@ def update_detailed_team_graphs(df, x_value, y_value, title):
             name=i
         ))
 
-    return {
-        'data': traces,
-        'layout': go.Layout(
-            xaxis={
-                'title': x_value,
-                'type': 'linear'
-            },
-            yaxis={
-                'title': y_value,
-                'type': 'linear'
-            },
-            legend={'x': 0, 'y': 1},
-            hovermode='closest',
-            title=title
-        )
-    }
+    return dcc.Graph(
+        figure={
+            'data': traces,
+            'layout': go.Layout(
+                xaxis={
+                    'title': x_value,
+                    'type': 'linear'
+                },
+                yaxis={
+                    'title': y_value,
+                    'type': 'linear'
+                },
+                legend={'x': 0, 'y': 1},
+                hovermode='closest',
+                title=title
+            )
+        }
+    )
 
 
-def cap_hit_distribution_details(df):
+def cap_hit_distribution(df):
     trace = go.Histogram(
         x=df['Cap Hit'],
     )
 
-    return {
-        'data': [trace],
-        'layout': {
-            'title': 'Cap Hit distribution',
-        },
-    }
+    return (
+        dcc.Graph(
+            figure={
+                'data': [trace],
+                'layout': {
+                    'title': 'Cap Hit distribution',
+                },
+            }
+        )
+    )

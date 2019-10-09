@@ -96,8 +96,8 @@ def render_team_stats(tab):
 
             html.Div(
                 children=[
-                    dcc.Graph(id='team-details-scatter'),
-                    dcc.Graph(id='team-details-distribution'),
+                    html.Div(id='team-details-scatter'),
+                    html.Div(id='team-details-distribution'),
                     html.Div(id='team-details-top-paid'),
                 ],
                 className="six columns",
@@ -131,8 +131,8 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
 
 @app.callback(
     [
-        Output('team-details-scatter', 'figure'),
-        Output('team-details-distribution', 'figure'),
+        Output('team-details-scatter', 'children'),
+        Output('team-details-distribution', 'children'),
         Output('team-details-top-paid', 'children'),
     ],
     [
@@ -156,7 +156,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     title = v.team_detail_title(hoverData, criteria, other_criteria)
 
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
-    distribution = g.cap_hit_distribution_details(players)
+    distribution = g.cap_hit_distribution(players)
 
     top_paid = [
         g.generate_table(top_paid_df),
