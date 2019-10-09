@@ -161,6 +161,7 @@ def render_team_stats(tab):
                 children=[
                     dcc.Graph(id='team-details-scatter'),
                     dcc.Graph(id='team-details-distribution'),
+                    html.Div(id='team-details-top-paid'),
                 ],
                 className="six columns",
             )
@@ -195,6 +196,7 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
     [
         Output('team-details-scatter', 'figure'),
         Output('team-details-distribution', 'figure'),
+        Output('team-details-top-paid', 'children'),
     ],
     [
         Input('teams_overview', 'hoverData'),
@@ -206,12 +208,15 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
     players = tm.get_team(df, team_name)
     players = players[players.Position.isin(player_positions)]
+    top_paid_df = hpf.top_paid_players(players)
     title = v.team_detail_title(hoverData, criteria, other_criteria)
 
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
     distribution = g.cap_hit_distribution_details(players)
+    table = g.generate_table(top_paid_df),
 
-    return scatter, distribution
+    return scatter, distribution, table
+
 
 # run webapp if main
 if __name__ == '__main__':
