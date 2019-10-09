@@ -1,7 +1,6 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 
 import graphs as g
@@ -43,6 +42,7 @@ def render_content(tab):
             g.scatter_plot_toi_pts('toi_pts', top_players_df),
             dcc.Markdown(notes),
         ])
+
 
 position_filter_data = [
     {'label': 'Center', 'value': 'C'},
