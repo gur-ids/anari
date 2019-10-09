@@ -18,7 +18,7 @@ teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 # handling pre-processed data
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
 
-max_cap_hit = tm.get_max_cap_hit()
+MAX_CAP_HIT = tm.get_max_cap_hit()
 
 # produced view
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -149,7 +149,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     top_paid_df = hpf.top_paid_players(players)
     cap_hit = tm.get_team_total_cap_hit(players)
     top_paid_cap_hit = hpf.cap_hit_share(top_paid_df, cap_hit)
-    top_paid_cap_hit_total = hpf.cap_hit_share(top_paid_df, max_cap_hit)
+    top_paid_cap_hit_total = hpf.cap_hit_share(top_paid_df, MAX_CAP_HIT)
     points = tm.get_team_total_points(players)
     top_paid_points = hpf.points_share(top_paid_df, points)
 
@@ -161,7 +161,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     top_paid = [
         g.generate_table(top_paid_df),
         html.P(v.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
-        html.P(v.top_paid_max_cap_hit_text(top_paid_cap_hit_total, max_cap_hit)),
+        html.P(v.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
         html.P(v.top_paid_points_text(top_paid_points, points)),
     ]
 
