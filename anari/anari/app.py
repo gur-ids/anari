@@ -208,14 +208,27 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
     players = tm.get_team(df, team_name)
     players = players[players.Position.isin(player_positions)]
+
     top_paid_df = hpf.top_paid_players(players)
+    cap_hit = tm.get_team_total_cap_hit(players)
+    top_paid_cap_hit = hpf.cap_hit_share(top_paid_df, cap_hit)
+    top_paid_cap_hit_total = hpf.cap_hit_share(top_paid_df, max_cap_hit)
+    points = tm.get_team_total_points(players)
+    top_paid_points = hpf.points_share(top_paid_df, points)
+
     title = v.team_detail_title(hoverData, criteria, other_criteria)
 
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
     distribution = g.cap_hit_distribution_details(players)
-    table = g.generate_table(top_paid_df),
 
-    return scatter, distribution, table
+    top_paid = [
+        g.generate_table(top_paid_df),
+        html.P(v.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
+        html.P(v.top_paid_max_cap_hit_text(top_paid_cap_hit_total, max_cap_hit)),
+        html.P(v.top_paid_points_text(top_paid_points, points)),
+    ]
+
+    return scatter, distribution, top_paid
 
 
 # run webapp if main
