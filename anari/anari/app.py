@@ -151,14 +151,19 @@ def render_team_stats(tab):
                     value='PTS')
             ], className="six columns")
         ], className="row"),
+
         html.Div([
             html.Div([
                 dcc.Graph(id='teams_overview'),
             ], className="six columns"),
 
-            html.Div([
-                dcc.Graph(id='team_details')
-            ], className="six columns")
+            html.Div(
+                children=[
+                    dcc.Graph(id='team-details-scatter'),
+                    html.P(id='team-details-distribution'),
+                ],
+                className="six columns",
+            )
         ], className="row")
 
     ], style={'display': 'none' if tab != 'team-stats' else 'block'})
@@ -187,12 +192,15 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
 
 
 @app.callback(
-    dash.dependencies.Output('team_details', 'figure'),
     [
-        dash.dependencies.Input('teams_overview', 'hoverData'),
-        dash.dependencies.Input('player_position_filter', 'value'),
-        dash.dependencies.Input('y_axis_condition', 'value'),
-        dash.dependencies.Input('x_axis_condition', 'value'),
+        Output('team-details-scatter', 'figure'),
+        Output('team-details-distribution', 'children'),
+    ],
+    [
+        Input('teams_overview', 'hoverData'),
+        Input('player_position_filter', 'value'),
+        Input('y_axis_condition', 'value'),
+        Input('x_axis_condition', 'value'),
     ])
 def update_detailed_team_graphs(hoverData, player_positions, criteria, other_criteria):
     team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
@@ -200,7 +208,9 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     players = players[players.Position.isin(player_positions)]
     title = v.team_detail_title(hoverData, criteria, other_criteria)
 
-    return g.update_detailed_team_graphs(players, other_criteria, criteria, title)
+    scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
+
+    return scatter, 'TODO: {0}'.format(team_name)
 
 
 # run webapp if main
