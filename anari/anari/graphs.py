@@ -159,3 +159,16 @@ def update_detailed_team_graphs(df, x_value, y_value, title):
             title=title
         )
     }
+
+
+def cap_hit_distribution_details(df):
+    trace = go.Histogram(
+        x=df['Cap Hit'],
+    )
+
+    return {
+        'data': [trace],
+        'layout': {
+            'title': 'Cap Hit distribution',
+        },
+    }
