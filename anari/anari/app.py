@@ -56,7 +56,8 @@ def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
             g.box_plot_by_points(top_players_df),
-            g.scatter_plot_toi_pts('toi_pts', top_players_df)
+            g.scatter_plot_toi_pts('toi_pts', top_players_df),
+            dcc.Markdown(notes),
         ])
     elif tab == 'great-stat-tab':
 
