@@ -64,12 +64,8 @@ def parse_born(yyy_mm_dd, year_then):
 
 
 def parse_position(position):
-    # FIXME: get first if many
-    if 'C' in position:
-        position = 'C'
-    elif 'D' in position:
-        position = 'D'
-    return position
+    # "NHL source listed first, followed by those listed by any other source."
+    return position.split('/')[0]
 
 
 def parse_ipp(ipp):
