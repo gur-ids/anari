@@ -137,6 +137,8 @@ def pre_process_2015(df_2016):
         usecols=COLUMNS_TO_INCLUDE_2015,
         na_values=NA_VALUES,
         converters={'Pos': parse_position, 'IPP': parse_ipp},
+        # Run na_values first, then converters
+        # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
     )
 
