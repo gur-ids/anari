@@ -1,13 +1,14 @@
+import uuid
 from datetime import datetime
 
 import pandas as pd
 
 # TODO For data scheisse part in linear regression:
 #
-#  - filter 2017-2018 columns: df.filter(items=COLUMNS_TO_INCLUDE_2016)
 #  - Imputation (fillna)
 #       - Seasons: use mean(?)
-#  - remove NHLid
+#  - filter  columns: df.filter(items=COLUMNS_TO_INCLUDE)
+#       - remove NHLid, First Name, Last Name
 #  - perhaps add 2015-2016 season
 
 NA_VALUES = ['#DIV/0!']
@@ -30,6 +31,8 @@ COLUMNS_TO_INCLUDE_2017 = [
 COLUMNS_TO_INCLUDE_2016 = [
     'Born',
     'NHLid',
+    'Last Name',
+    'First Name',
     'Position',
     'GP',
     'G',
@@ -42,6 +45,8 @@ COLUMNS_TO_INCLUDE_2016 = [
 
 COLUMNS_TO_INCLUDE_2015 = [
     'Age',
+    'First Name',
+    'Last Name',
     'Pos',
     'GP',
     'G',
@@ -71,6 +76,22 @@ def parse_ipp(ipp):
     return float(ipp.strip('%'))
 
 
+def fill_id(first_name, last_name, df_next_year):
+    players_df = df_next_year.loc[lambda x: (x['First Name'] == first_name) & (x['Last Name'] == last_name)]
+    found_players = len(players_df.index)
+
+    if found_players == 0:
+        # Assign dummy id
+        player_id = uuid.uuid4()
+    elif found_players == 1:
+        player_id = players_df['NHLid'].iloc[0]
+    else:
+        # TODO: Do something for the duplicates if necessary
+        pass
+
+    return player_id
+
+
 def fill_seasons(x, df_2017):
     # NaN if player did not play following season
     seasons_2017 = df_2017.loc[df_2017['NHLid'] == x, 'Seasons']
@@ -87,7 +108,9 @@ def format_columns_2016(df, df_2017):
 def format_columns_2015(df, df_2016):
     df = df.rename(columns={'Pos': 'Position', 'TOI/G': 'TOI/GP', 'IPP': 'IPP%'})
     df['PTS/GP'] = df['PTS'] / df['GP']
-    # TODO: NHLid, Seasons
+    # TODO: Seasons
+    df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
+
     return df
 
 
