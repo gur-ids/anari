@@ -5,7 +5,8 @@ import pandas as pd
 # TODO For data scheisse part in linear regression:
 #
 #  - filter 2017-2018 columns: df.filter(items=COLUMNS_TO_INCLUDE_2016)
-#  - fillna(?)
+#  - Imputation (fillna)
+#       - Seasons: use mean(?)
 #  - remove NHLid
 #  - perhaps add 2015-2016 season
 
@@ -58,10 +59,9 @@ def parse_ipp(ipp):
 
 
 def fill_seasons(x, df_2017):
-    # FIXME: use mean
-    # Impute Season: 1 if player did not play following season
+    # NaN if player did not play following season
     seasons_2017 = df_2017.loc[df_2017['NHLid'] == x, 'Seasons']
-    return seasons_2017.iloc[0] - 1 if not seasons_2017.empty else 1
+    return seasons_2017.iloc[0] - 1 if not seasons_2017.empty else float('nan')
 
 
 def format_columns_2016(df, df_2017):
