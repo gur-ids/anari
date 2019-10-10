@@ -53,9 +53,9 @@ COLUMNS_TO_INCLUDE_2015 = [
 ]
 
 
-def parse_born(yyy_mm_dd):
+def parse_born(yyy_mm_dd, year_then):
     born_year = datetime.strptime(yyy_mm_dd, '%Y-%m-%d').strftime('%Y')
-    return 2016 - int(born_year)
+    return year_then - int(born_year)
 
 
 def parse_position(position):
@@ -118,7 +118,7 @@ def pre_process_2016(df_2017):
         header=2,
         usecols=COLUMNS_TO_INCLUDE_2016,
         na_values=NA_VALUES,
-        converters={'Born': parse_born, 'Position': parse_position, 'IPP%': parse_ipp},
+        converters={'Born': lambda x: parse_born(x, 2016), 'Position': parse_position, 'IPP%': parse_ipp},
         # Run na_values first, then converters
         # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
