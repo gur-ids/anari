@@ -77,6 +77,7 @@ def parse_ipp(ipp):
 
 
 def fill_id(first_name, last_name, df_next_year):
+    # NOTE: The function could find id data from all the following seasons
     players_df = df_next_year.loc[lambda x: (x['First Name'] == first_name) & (x['Last Name'] == last_name)]
     found_players = len(players_df.index)
 
@@ -93,8 +94,8 @@ def fill_id(first_name, last_name, df_next_year):
 
 
 def fill_seasons(x, df_next_year):
-    # NaN if player does not have data available
     # NOTE: The function could find season data from all the following seasons
+    # NaN if player does not have data available
     seasons_next_year = df_next_year.loc[df_next_year['NHLid'] == x, 'Seasons']
     return seasons_next_year.iloc[0] - 1 if not seasons_next_year.empty else float('nan')
 
