@@ -100,6 +100,7 @@ def format_columns_2016(df, df_2017):
     df = df.rename(columns={'Born': 'Age'})
     df['PTS/GP'] = df['PTS'] / df['GP']
     df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2017,))
+
     return df
 
 
@@ -110,12 +111,6 @@ def format_columns_2015(df, df_2016):
     df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2016,))
 
     return df
-
-
-def pre_process_linear():
-    df_2017 = pre_process_2017()
-    df_2016 = pre_process_2016(df_2017)
-    df_2015 = pre_process_2015(df_2016)
 
 
 def pre_process_2017():
@@ -166,3 +161,18 @@ def pre_process_2015(df_2016):
     df = format_columns_2015(df, df_2016)
 
     return df
+
+
+def impute_columns(source_df, df):
+    avg_seasons = source_df['Seasons'].mean()
+    df['Seasons'] = df['Seasons'].fillna(avg_seasons)
+    return df
+
+
+def pre_process_linear():
+    df_2017 = pre_process_2017()
+    df_2016 = pre_process_2016(df_2017)
+    df_2015 = pre_process_2015(df_2016)
+
+    df_2016 = impute_columns(df_2017, df_2016)
+    df_2015 = impute_columns(df_2017, df_2015)
