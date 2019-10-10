@@ -10,6 +10,8 @@ import pandas as pd
 #  - remove NHLid
 #  - perhaps add 2015-2016 season
 
+NA_VALUES = ['#DIV/0!']
+
 COLUMNS_TO_INCLUDE_2017 = [
     'Age',
     'Seasons',
@@ -38,7 +40,17 @@ COLUMNS_TO_INCLUDE_2016 = [
     'IPP%',
 ]
 
-NA_VALUES_2016 = ['#DIV/0!']
+COLUMNS_TO_INCLUDE_2015 = [
+    'Age',
+    'Pos',
+    'GP',
+    'G',
+    'A',
+    'PTS',
+    '+/-',
+    'TOI/G',
+    'IPP',
+]
 
 
 def parse_born(yyy_mm_dd):
@@ -47,6 +59,7 @@ def parse_born(yyy_mm_dd):
 
 
 def parse_position(position):
+    # FIXME: get first if many
     if 'C' in position:
         position = 'C'
     elif 'D' in position:
@@ -71,9 +84,17 @@ def format_columns_2016(df, df_2017):
     return df
 
 
+def format_columns_2015(df, df_2016):
+    df = df.rename(columns={'Pos': 'Position', 'TOI/G': 'TOI/GP', 'IPP': 'IPP%'})
+    df['PTS/GP'] = df['PTS'] / df['GP']
+    # TODO: NHLid, Seasons
+    return df
+
+
 def pre_process_linear():
     df_2017 = pre_process_2017()
     df_2016 = pre_process_2016(df_2017)
+    df_2015 = pre_process_2015(df_2016)
 
 
 def pre_process_2017():
@@ -96,7 +117,7 @@ def pre_process_2016(df_2017):
         path,
         header=2,
         usecols=COLUMNS_TO_INCLUDE_2016,
-        na_values=NA_VALUES_2016,
+        na_values=NA_VALUES,
         converters={'Born': parse_born, 'Position': parse_position, 'IPP%': parse_ipp},
         # Run na_values first, then converters
         # https://github.com/pandas-dev/pandas/issues/13302
@@ -104,5 +125,21 @@ def pre_process_2016(df_2017):
     )
 
     df = format_columns_2016(df, df_2017)
+
+    return df
+
+
+def pre_process_2015(df_2016):
+    path = '../data/NHL 2015-16.csv'
+
+    df = pd.read_csv(
+        path,
+        usecols=COLUMNS_TO_INCLUDE_2015,
+        na_values=NA_VALUES,
+        converters={'Pos': parse_position, 'IPP': parse_ipp},
+        engine='python',
+    )
+
+    df = format_columns_2015(df, df_2016)
 
     return df
