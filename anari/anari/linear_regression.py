@@ -3,17 +3,9 @@ from datetime import datetime
 
 import pandas as pd
 
-# TODO For data scheisse part in linear regression:
-#
-#  - Imputation (fillna)
-#       - Seasons: use mean from earliest available(?)
-#  - filter  columns: df.filter(items=COLUMNS_TO_INCLUDE)
-#       - remove NHLid, First Name, Last Name
-#  - perhaps add 2015-2016 season
-
 NA_VALUES = ['#DIV/0!']
 
-COLUMNS_TO_INCLUDE_2017 = [
+COLUMNS_TO_INCLUDE = [
     'Age',
     'Seasons',
     'NHLid',
@@ -119,7 +111,7 @@ def pre_process_2017():
     df = pd.read_csv(
         path,
         header=2,
-        usecols=COLUMNS_TO_INCLUDE_2017,
+        usecols=COLUMNS_TO_INCLUDE,
         converters={'Position': parse_position, 'IPP%': parse_ipp},
     )
 
@@ -169,6 +161,11 @@ def impute_columns(source_df, df):
     return df
 
 
+def filter_columns(df):
+    # TODO: remove id?
+    return df.filter(items=COLUMNS_TO_INCLUDE)
+
+
 def pre_process_linear():
     df_2017 = pre_process_2017()
     df_2016 = pre_process_2016(df_2017)
@@ -176,3 +173,8 @@ def pre_process_linear():
 
     df_2016 = impute_columns(df_2017, df_2016)
     df_2015 = impute_columns(df_2017, df_2015)
+
+    df_2016 = filter_columns(df_2016)
+    df_2015 = filter_columns(df_2015)
+
+    linear_df = pd.concat([df_2017, df_2016, df_2015], sort=True)
