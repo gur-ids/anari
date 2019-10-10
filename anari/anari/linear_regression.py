@@ -73,7 +73,7 @@ def format_columns_2016(df, df_2017):
 
 def pre_process_linear():
     df_2017 = pre_process_2017()
-    df_2016 = pre_process_linear_2016(df_2017)
+    df_2016 = pre_process_2016(df_2017)
 
 
 def pre_process_2017():
@@ -89,7 +89,7 @@ def pre_process_2017():
     return df
 
 
-def pre_process_linear_2016(df_2017):
+def pre_process_2016(df_2017):
     path = '../data/NHL_2016-17.csv'
 
     df = pd.read_csv(
