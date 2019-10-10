@@ -6,7 +6,7 @@ import pandas as pd
 # TODO For data scheisse part in linear regression:
 #
 #  - Imputation (fillna)
-#       - Seasons: use mean(?)
+#       - Seasons: use mean from earliest available(?)
 #  - filter  columns: df.filter(items=COLUMNS_TO_INCLUDE)
 #       - remove NHLid, First Name, Last Name
 #  - perhaps add 2015-2016 season
@@ -92,10 +92,11 @@ def fill_id(first_name, last_name, df_next_year):
     return player_id
 
 
-def fill_seasons(x, df_2017):
-    # NaN if player did not play following season
-    seasons_2017 = df_2017.loc[df_2017['NHLid'] == x, 'Seasons']
-    return seasons_2017.iloc[0] - 1 if not seasons_2017.empty else float('nan')
+def fill_seasons(x, df_next_year):
+    # NaN if player does not have data available
+    # NOTE: The function could find season data from all the following seasons
+    seasons_next_year = df_next_year.loc[df_next_year['NHLid'] == x, 'Seasons']
+    return seasons_next_year.iloc[0] - 1 if not seasons_next_year.empty else float('nan')
 
 
 def format_columns_2016(df, df_2017):
@@ -108,8 +109,8 @@ def format_columns_2016(df, df_2017):
 def format_columns_2015(df, df_2016):
     df = df.rename(columns={'Pos': 'Position', 'TOI/G': 'TOI/GP', 'IPP': 'IPP%'})
     df['PTS/GP'] = df['PTS'] / df['GP']
-    # TODO: Seasons
     df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
+    df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2016,))
 
     return df
 
