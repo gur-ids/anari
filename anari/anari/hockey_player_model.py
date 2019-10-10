@@ -13,7 +13,7 @@ def format_columns(df):
     df['Cap Hit'] = df['Cap Hit'].replace(r'[\$,]', '', regex=True).astype(float)
     df['IPP%'] = df['IPP%'].str.strip('%').astype(float)
     df['Team'] = df['Team'].str[-3:]
-    df['Position'] = df['Position'].apply(lambda x: 'C' if 'C' in x else x)
+    df['Position'] = df['Position'].apply(lambda position: position.split('/')[-1])
     return df
 
 
