@@ -55,9 +55,9 @@ def parse_born(yyy_mm_dd, year_then):
     return year_then - int(born_year)
 
 
-def parse_position(position):
+def parse_position(position, keep_first=False):
     # "NHL source listed first, followed by those listed by any other source."
-    return position.split('/')[0]
+    return position.split('/')[0 if keep_first else -1]
 
 
 def parse_ipp(ipp):
@@ -126,7 +126,11 @@ def pre_process_2016(df_2017):
         header=2,
         usecols=COLUMNS_TO_INCLUDE_2016,
         na_values=NA_VALUES,
-        converters={'Born': lambda x: parse_born(x, 2016), 'Position': parse_position, 'IPP%': parse_ipp},
+        converters={
+            'Born': lambda x: parse_born(x, 2016),
+            'Position': lambda x: parse_position(x, True),
+            'IPP%': parse_ipp
+        },
         # Run na_values first, then converters
         # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
@@ -144,7 +148,10 @@ def pre_process_2015(df_2016):
         path,
         usecols=COLUMNS_TO_INCLUDE_2015,
         na_values=NA_VALUES,
-        converters={'Pos': parse_position, 'IPP': parse_ipp},
+        converters={
+            'Pos': lambda x: parse_position(x, True),
+            'IPP': parse_ipp
+        },
         # Run na_values first, then converters
         # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
