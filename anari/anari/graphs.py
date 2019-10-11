@@ -74,7 +74,7 @@ def scatter_plot_toi_pts(plot_id, df):
     )
 
 
-def update_overview_team_graphs(df, y_value):
+def update_overview_team_graphs(df, y_value, agg_method):
     traces = []
 
     for i in df.Playoffs.unique():
@@ -97,14 +97,14 @@ def update_overview_team_graphs(df, y_value):
         'layout': go.Layout(
             xaxis={
                 'title': 'Team points',
-                'type': 'linear'
+                'type': 'linear',
             },
             yaxis={
-                'title': 'avg ' + y_value,
-                'type': 'linear'
+                'title': '{0} ({1})'.format(y_value, agg_method),
+                'type': 'linear',
             },
             legend={'x': 0, 'y': 1},
-            hovermode='closest'
+            hovermode='closest',
         )
     }
 

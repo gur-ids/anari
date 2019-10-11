@@ -53,10 +53,11 @@ position_filter_data = [
 ]
 position_agg_method = [
     {'label': 'Mean', 'value': 'mean'},
-    {'label': 'Variance', 'value': 'variance'}
+    {'label': 'Variance', 'value': 'variance'},
+    {'label': 'Sum', 'value': 'sum'},
 ]
 
-left_table_y_label = ['+/-', 'Age', 'Salary', 'TOI/GP', 'IPP%', 'PAX']
+left_table_y_label = ['+/-', 'Age', 'Salary', 'Cap Hit', 'TOI/GP', 'IPP%', 'PAX']
 right_table_x_label = ['+/-', 'Age', 'PTS', 'Cap Hit', 'TOI/GP', 'PAX', 'IPP%', 'Salary']
 
 @app.callback(Output('render_team_stats', 'children'),
@@ -109,11 +110,11 @@ def render_team_stats(tab):
 
 
 @app.callback(
-    dash.dependencies.Output('teams-overview', 'figure'),
+    Output('teams-overview', 'figure'),
     [
-        dash.dependencies.Input('player_position_filter', 'value'),
-        dash.dependencies.Input('y_axis_condition', 'value'),
-        dash.dependencies.Input('agg_method', 'value'),
+        Input('player_position_filter', 'value'),
+        Input('y_axis_condition', 'value'),
+        Input('agg_method', 'value'),
     ])
 def update_overview_team_graphs(player_positions, criteria, agg_method):
     teams_subset = tm.top_bottom_teams(teams_df)
@@ -124,10 +125,12 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
         players_of_team = tm.get_mean_by(players_of_team, criteria)
     elif agg_method == 'variance':
         players_of_team = tm.get_variance_by(players_of_team, criteria)
+    elif agg_method == 'sum':
+        players_of_team = tm.get_sum_by(players_of_team, criteria)
 
     teams_subset = teams_subset.merge(players_of_team, left_on='Team', right_on='Team')
 
-    return g.update_overview_team_graphs(teams_subset, criteria)
+    return g.update_overview_team_graphs(teams_subset, criteria, agg_method)
 
 
 @app.callback(

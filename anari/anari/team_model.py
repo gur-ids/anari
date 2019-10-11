@@ -30,6 +30,10 @@ def get_variance_by(df, criteria):
     return df.groupby('Team', as_index=False)[criteria].var()
 
 
+def get_sum_by(df, criteria):
+    return df.groupby('Team', as_index=False)[criteria].sum()
+
+
 def get_team_total_cap_hit(df):
     return df['Cap Hit'].sum()
 
