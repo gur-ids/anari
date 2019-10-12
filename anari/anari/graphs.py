@@ -161,3 +161,35 @@ def cap_hit_distribution(df):
             }
         )
     )
+
+
+def scatter_matrix(df):
+    df = df.drop(columns=['NHLid'])
+    dimensions = [dict(label=column, values=df[column]) for column in df.columns]
+    index_vals = df['Position'].astype('category').cat.codes
+
+    trace = go.Splom(
+        dimensions=dimensions,
+        diagonal_visible=False,
+        text=df['Position'],
+        marker=dict(
+            color=index_vals,
+            showscale=False,    # colors encode categorical variables
+            line_color='white',
+            line_width=0.5
+        )
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': [trace],
+                'layout': go.Layout(
+                    title='Scatter matrix',
+                    width=1000,
+                    height=1000,
+                    autosize=True,
+                )
+            }
+        )
+    )

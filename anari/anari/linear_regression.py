@@ -185,3 +185,5 @@ def pre_process_linear():
     df_2015 = filter_columns(df_2015)
 
     linear_df = pd.concat([df_2017, df_2016, df_2015], sort=True)
+
+    return linear_df
