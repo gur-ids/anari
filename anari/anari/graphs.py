@@ -164,7 +164,6 @@ def cap_hit_distribution(df):
 
 
 def scatter_matrix(df):
-    df = df.drop(columns=['NHLid'])
     dimensions = [dict(label=column, values=df[column]) for column in df.columns]
     index_vals = df['Position'].astype('category').cat.codes
 

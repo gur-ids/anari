@@ -176,8 +176,9 @@ def transform_categorical(df):
 
 
 def filter_columns(df):
-    # TODO: remove id?
-    return df.filter(items=COLUMNS_TO_INCLUDE)
+    df = df.filter(items=COLUMNS_TO_INCLUDE)
+    df = df.drop(['NHLid'], axis=1)
+    return df
 
 
 def pre_process_linear():
@@ -185,6 +186,7 @@ def pre_process_linear():
     df_2016 = pre_process_2016(df_2017)
     df_2015 = pre_process_2015(df_2016)
 
+    df_2017 = filter_columns(df_2017)
     df_2016 = filter_columns(df_2016)
     df_2015 = filter_columns(df_2015)
 
