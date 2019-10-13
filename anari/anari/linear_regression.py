@@ -170,6 +170,11 @@ def impute_columns(df):
     return df
 
 
+def transform_categorical(df):
+    df['Position'] = df['Position'].astype('category').cat.codes
+    return df
+
+
 def filter_columns(df):
     # TODO: remove id?
     return df.filter(items=COLUMNS_TO_INCLUDE)
@@ -185,5 +190,6 @@ def pre_process_linear():
 
     linear_df = pd.concat([df_2017, df_2016, df_2015], sort=True)
     linear_df = impute_columns(linear_df)
+    linear_df = transform_categorical(linear_df)
 
     return linear_df
