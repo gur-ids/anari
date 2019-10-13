@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 
 NA_VALUES = ['#DIV/0!']
 
+lm = LinearRegression()
+
 COLUMNS_TO_INCLUDE = [
     'Age',
     'Seasons',
@@ -202,10 +204,15 @@ def pre_process_linear():
 def do_linear(df):
     y = df['PTS']
     X = df.drop(['PTS'], axis=1)
+#    X = X.drop(['G', 'A'], axis=1)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y)
-    lm = LinearRegression()
     lm.fit(X_train, y_train)
     y_pred = lm.predict(X_test)
+    coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])  
+    print(coeff_df)
 
     return X_train, X_test, y_train, y_test, y_pred
+
+def predict_player(prediction_target):
+    return lm.predict(prediction_target)
