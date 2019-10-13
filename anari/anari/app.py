@@ -31,6 +31,7 @@ app.layout = html.Div([
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
         dcc.Tab(label='Basic Info', value='basic-info-tab'),
         dcc.Tab(label='Team stats', value='team-stats'),
+        dcc.Tab(label='Linear regression', value='linear-regression'),
     ]),
     html.Div(id='tabs-content'),
 ])
@@ -42,6 +43,9 @@ def render_content(tab):
         return html.Div(children=[
             g.box_plot_by_points(top_players_df),
             g.scatter_plot_toi_pts('toi_pts', top_players_df),
+        ])
+    elif tab == 'linear-regression':
+        return html.Div(children=[
             g.scatter_matrix(linear_df),
             dcc.Markdown(notes),
         ])
