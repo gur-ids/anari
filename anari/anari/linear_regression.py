@@ -162,8 +162,8 @@ def pre_process_2015(df_2016):
     return df
 
 
-def impute_columns(source_df, df):
-    avg_seasons = source_df['Seasons'].mean()
+def impute_columns(df):
+    avg_seasons = df['Seasons'].mean()
     df['Seasons'] = df['Seasons'].fillna(avg_seasons)
     return df
 
@@ -178,12 +178,10 @@ def pre_process_linear():
     df_2016 = pre_process_2016(df_2017)
     df_2015 = pre_process_2015(df_2016)
 
-    df_2016 = impute_columns(df_2017, df_2016)
-    df_2015 = impute_columns(df_2017, df_2015)
-
     df_2016 = filter_columns(df_2016)
     df_2015 = filter_columns(df_2015)
 
     linear_df = pd.concat([df_2017, df_2016, df_2015], sort=True)
+    linear_df = impute_columns(linear_df)
 
     return linear_df
