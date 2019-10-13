@@ -165,6 +165,8 @@ def pre_process_2015(df_2016):
 def impute_columns(df):
     avg_seasons = df['Seasons'].mean()
     df['Seasons'] = df['Seasons'].fillna(avg_seasons)
+    avg_ipp = df['IPP%'].mean()
+    df['IPP%'] = df['IPP%'].fillna(avg_ipp)
     return df
 
 
