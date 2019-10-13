@@ -16,6 +16,7 @@ df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 linear_df = lr.pre_process_linear()
+X_train, X_test, y_train, y_test, y_pred = lr.do_linear(linear_df)
 
 # handling pre-processed data
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
@@ -43,11 +44,12 @@ def render_content(tab):
         return html.Div(children=[
             g.box_plot_by_points(top_players_df),
             g.scatter_plot_toi_pts('toi_pts', top_players_df),
+            dcc.Markdown(notes),
         ])
     elif tab == 'linear-regression':
         return html.Div(children=[
             g.scatter_matrix(linear_df),
-            dcc.Markdown(notes),
+            g.regression_scatter(X_train, X_test, y_train, y_test, y_pred)
         ])
     elif tab == 'team-stats':
         return html.Div(id='render_team_stats')

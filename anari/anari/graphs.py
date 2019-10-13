@@ -192,3 +192,27 @@ def scatter_matrix(df):
             }
         )
     )
+
+
+def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
+    trace0 = go.Scatter(
+        x=X_test['TOI/GP'],
+        y=y_pred,
+        name='TOI/GP',
+        mode='markers',
+    )
+
+    data = [trace0]
+
+    layout = go.Layout(
+        title='Regression scatter',
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': data,
+                'layout': layout,
+            }
+        )
+    )

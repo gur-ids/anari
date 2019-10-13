@@ -2,6 +2,8 @@ import uuid
 from datetime import datetime
 
 import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 
 NA_VALUES = ['#DIV/0!']
 
@@ -195,3 +197,15 @@ def pre_process_linear():
     linear_df = transform_categorical(linear_df)
 
     return linear_df
+
+
+def do_linear(df):
+    y = df['PTS']
+    X = df.drop(['PTS'], axis=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    lm = LinearRegression()
+    lm.fit(X_train, y_train)
+    y_pred = lm.predict(X_test)
+
+    return X_train, X_test, y_train, y_test, y_pred
