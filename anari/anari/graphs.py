@@ -195,7 +195,7 @@ def scatter_matrix(df):
 
 def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
     trace0 = go.Scatter(
-        x=X_test['TOI/GP'],
+        x=y_test,
         y=y_pred,
         name='TOI/GP',
         mode='markers',

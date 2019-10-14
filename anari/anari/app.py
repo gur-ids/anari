@@ -15,7 +15,7 @@ import linear_regression as lr
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
-linear_df = lr.pre_process_linear()
+linear_df, latest_df = lr.pre_process_linear()
 
 X_train2, X_test2, y_train2, y_test2, y_pred2 = lr.do_forest(linear_df)
 X_train, X_test, y_train, y_test, y_pred = lr.do_linear(linear_df)
@@ -51,7 +51,7 @@ def render_content(tab):
         ])
     elif tab == 'linear-regression':
         return html.Div(children=[
-            g.scatter_matrix(linear_df),
+            g.scatter_matrix(latest_df),
             g.regression_scatter(X_train, X_test, y_train, y_test, y_pred),
             g.regression_scatter(X_train2, X_test2, y_train2, y_test2, y_pred2),
             html.Div([
@@ -207,7 +207,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
         html.P(v.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
         html.P(v.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
         html.P(v.top_paid_points_text(top_paid_points, points)),
-    ] 
+    ]
     return scatter, distribution, top_paid, h2_distribution, h2_top3
 
 

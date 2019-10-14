@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime
 
 import pandas as pd
@@ -78,8 +77,7 @@ def fill_id(first_name, last_name, df_next_year):
     found_players = len(players_df.index)
 
     if found_players == 0:
-        # Assign dummy id
-        player_id = uuid.uuid4()
+        player_id = float('nan')
     elif found_players == 1:
         player_id = players_df['NHLid'].iloc[0]
     else:
@@ -171,11 +169,13 @@ def pre_process_2015(df_2016):
 
 
 def impute_columns(df):
-    avg_seasons = df['Seasons'].mean()
-    df['Seasons'] = df['Seasons'].fillna(avg_seasons)
     avg_ipp = df['IPP%'].mean()
     df['IPP%'] = df['IPP%'].fillna(avg_ipp)
     return df
+
+
+def remove_missing(df):
+    return df.dropna(subset=['NHLid'])
 
 
 def transform_categorical(df):
@@ -185,8 +185,14 @@ def transform_categorical(df):
 
 def filter_columns(df):
     df = df.filter(items=COLUMNS_TO_INCLUDE)
-    df = df.drop(['NHLid'], axis=1)
+    df = df.drop(['Age', 'Seasons'], axis=1)
+    # df = df.drop(['NHLid'], axis=1)
     return df
+
+
+def combine_data(left, right):
+    result = pd.merge(left, right, on='NHLid')
+    return result
 
 
 def pre_process_linear():
@@ -198,36 +204,54 @@ def pre_process_linear():
     df_2016 = filter_columns(df_2016)
     df_2015 = filter_columns(df_2015)
 
-    linear_df = pd.concat([df_2017, df_2016, df_2015], sort=True)
-    linear_df = impute_columns(linear_df)
-    linear_df = transform_categorical(linear_df)
+    df_2017 = impute_columns(df_2017)
+    df_2016 = impute_columns(df_2016)
+    df_2015 = impute_columns(df_2015)
 
-    return linear_df
+    df_2017 = remove_missing(df_2017)
+    df_2016 = remove_missing(df_2016)
+    df_2015 = remove_missing(df_2015)
+
+    df_2017 = transform_categorical(df_2017)
+    df_2016 = transform_categorical(df_2016)
+    df_2015 = transform_categorical(df_2015)
+
+    df_2016 = df_2016.drop(['PTS/GP'], axis=1)
+    df_2015 = df_2015.drop(['PTS/GP'], axis=1)
+    previous_seasons_df = combine_data(df_2015, df_2016)
+
+    linear_df = pd.DataFrame()
+    linear_df['2017_PTS'] = df_2017['PTS']
+    linear_df['NHLid'] = df_2017['NHLid']
+
+    linear_df = previous_seasons_df.merge(linear_df, how='inner', on=['NHLid'])
+    linear_df = linear_df.drop(['NHLid'], axis=1)
+
+    return linear_df, df_2017
 
 
 def do_linear(df):
-    y = df['PTS']
-    X = df.drop(['PTS'], axis=1)
+    y = df['2017_PTS']
+    X = df.drop(['2017_PTS'], axis=1)
 #    X = X.drop(['G', 'A'], axis=1)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y)
     lm.fit(X_train, y_train)
     y_pred = lm.predict(X_test)
     coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])  
-   # print(coeff_df)
+    print(coeff_df)
     errors = abs(y_pred - y_test)# Print out the mean absolute error (mae)
-    print('linear')
-    print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
-   # print(errors)
+   # print('linear')
+   # print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
     # Calculate mean absolute percentage error (MAPE)
     mape = 100 * (errors / y_test)# Calculate and display accuracy
     accuracy = 100 - np.mean(mape)
-    print('Accuracy:', round(accuracy, 2), '%.')
+#    print('Accuracy:', round(accuracy, 2), '%.')
     return X_train, X_test, y_train, y_test, y_pred
 
 def do_forest(df):
-    y = df['PTS']
-    X = df.drop(['PTS'], axis=1)
+    y = df['2017_PTS']
+    X = df.drop(['2017_PTS'], axis=1)
 #    X = X.drop(['G', 'A'], axis=1)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y)
@@ -237,14 +261,11 @@ def do_forest(df):
     errors = abs(y_pred - y_test)# Print out the mean absolute error (mae)
     print('forest')
     print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
-    #print(errors)
     # Calculate mean absolute percentage error (MAPE)
     mape = 100 * (errors / y_test)# Calculate and display accuracy
     accuracy = 100 - np.mean(mape)
-    print('Accuracy:', round(accuracy, 2), '%.')
-
+    #print('Accuracy:', round(accuracy, 2), '%.')
     return X_train, X_test, y_train, y_test, y_pred
-
 
 
 def predict_player(prediction_target):
