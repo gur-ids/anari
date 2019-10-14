@@ -229,24 +229,5 @@ def do_linear(df):
     return X_train, X_test, y_train, y_test, y_pred
 
 
-def do_forest(df):
-    y = df['2017_PTS']
-    X = df.drop(['2017_PTS'], axis=1)
-    # X = X.drop(['G', 'A'], axis=1)
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
-    rf.fit(X_train, y_train)
-    # Use the forest's predict method on the test data
-    y_pred = rf.predict(X_test)     # Calculate the absolute errors
-    errors = abs(y_pred - y_test)   # Print out the mean absolute error (mae)
-    print('forest')
-    print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
-    # Calculate mean absolute percentage error (MAPE)
-    mape = 100 * (errors / y_test)  # Calculate and display accuracy
-    accuracy = 100 - np.mean(mape)
-    # print('Accuracy:', round(accuracy, 2), '%.')
-    return X_train, X_test, y_train, y_test, y_pred
-
-
 def predict_player(prediction_target):
     return lm.predict(prediction_target)
