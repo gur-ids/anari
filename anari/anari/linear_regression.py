@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import numpy as np
 import pandas as pd
 # randomforest
@@ -15,7 +13,6 @@ NA_VALUES = ['#DIV/0!']
 lm = LinearRegression()
 
 COLUMNS_TO_INCLUDE = [
-    'Age',
     'NHLid',
     'Position',
     'GP',
@@ -29,7 +26,6 @@ COLUMNS_TO_INCLUDE = [
 ]
 
 COLUMNS_TO_INCLUDE_2016 = [
-    'Born',
     'NHLid',
     'Last Name',
     'First Name',
@@ -44,7 +40,6 @@ COLUMNS_TO_INCLUDE_2016 = [
 ]
 
 COLUMNS_TO_INCLUDE_2015 = [
-    'Age',
     'First Name',
     'Last Name',
     'Pos',
@@ -56,11 +51,6 @@ COLUMNS_TO_INCLUDE_2015 = [
     'TOI/G',
     'IPP',
 ]
-
-
-def parse_born(yyy_mm_dd, year_then):
-    born_year = datetime.strptime(yyy_mm_dd, '%Y-%m-%d').strftime('%Y')
-    return year_then - int(born_year)
 
 
 def parse_position(position, keep_first=False):
@@ -89,7 +79,6 @@ def fill_id(first_name, last_name, df_next_year):
 
 
 def format_columns_2016(df):
-    df = df.rename(columns={'Born': 'Age'})
     df['PTS/GP'] = df['PTS'] / df['GP']
 
     return df
@@ -125,7 +114,6 @@ def pre_process_2016():
         usecols=COLUMNS_TO_INCLUDE_2016,
         na_values=NA_VALUES,
         converters={
-            'Born': lambda x: parse_born(x, 2016),
             'Position': lambda x: parse_position(x, True),
             'IPP%': parse_ipp
         },
@@ -177,7 +165,6 @@ def transform_categorical(df):
 
 def filter_columns(df):
     df = df.filter(items=COLUMNS_TO_INCLUDE)
-    df = df.drop(['Age'], axis=1)
     # df = df.drop(['NHLid'], axis=1)
     return df
 
