@@ -186,14 +186,9 @@ def filter_columns(df):
     return df
 
 
-def combine_data(dataframes):
-    df = pd.concat(dataframes, sort=True)
-    df = df.groupby('NHLid').agg(lambda x: x.tolist())
-    df['Position'] = df['Position'].str[0]
-
-    print(df)
-
-    return
+def combine_data(left, right):
+    result = pd.merge(left, right, on='NHLid')
+    return result
 
 
 def pre_process_linear():
@@ -217,9 +212,17 @@ def pre_process_linear():
     df_2016 = transform_categorical(df_2016)
     df_2015 = transform_categorical(df_2015)
 
-    previous_seasons_df = combine_data([df_2015, df_2016])
+    previous_seasons_df = combine_data(df_2015, df_2016)
 
-    return previous_seasons_df, df_2017
+    linear_df = pd.DataFrame()
+    linear_df['2017_PTS'] = df_2017['PTS']
+    linear_df['NHLid'] = df_2017['NHLid']
+
+    linear_df = previous_seasons_df.merge(linear_df, how='inner', on=['NHLid'])
+
+    linear_df = linear_df.drop(['NHLid'], axis=1)
+
+    return previous_seasons_df
 
 
 def do_linear(x_df, y_df):

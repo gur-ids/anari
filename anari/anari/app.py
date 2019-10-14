@@ -15,8 +15,8 @@ import linear_regression as lr
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
-previous_seasons_df, latest_season_df = lr.pre_process_linear()
-X_train, X_test, y_train, y_test, y_pred = lr.do_linear(previous_seasons_df, latest_season_df)
+linear_df = lr.pre_process_linear()
+# X_train, X_test, y_train, y_test, y_pred = lr.do_linear(previous_seasons_df, latest_season_df)
 
 # handling pre-processed data
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
