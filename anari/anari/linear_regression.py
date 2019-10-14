@@ -19,7 +19,6 @@ COLUMNS_TO_INCLUDE = [
     'G',
     'A',
     'PTS',
-    'PTS/GP',
     '+/-',
     'TOI/GP',
     'IPP%',
@@ -78,15 +77,8 @@ def fill_id(first_name, last_name, df_next_year):
     return player_id
 
 
-def format_columns_2016(df):
-    df['PTS/GP'] = df['PTS'] / df['GP']
-
-    return df
-
-
 def format_columns_2015(df, df_2016):
     df = df.rename(columns={'Pos': 'Position', 'TOI/G': 'TOI/GP', 'IPP': 'IPP%'})
-    df['PTS/GP'] = df['PTS'] / df['GP']
     df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
 
     return df
@@ -121,8 +113,6 @@ def pre_process_2016():
         # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
     )
-
-    df = format_columns_2016(df)
 
     return df
 
@@ -195,8 +185,6 @@ def pre_process_linear():
     df_2016 = transform_categorical(df_2016)
     df_2015 = transform_categorical(df_2015)
 
-    df_2016 = df_2016.drop(['PTS/GP'], axis=1)
-    df_2015 = df_2015.drop(['PTS/GP'], axis=1)
     previous_seasons_df = combine_data(df_2015, df_2016)
 
     linear_df = pd.DataFrame()
