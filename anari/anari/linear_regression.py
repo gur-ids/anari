@@ -155,7 +155,6 @@ def transform_categorical(df):
 
 def filter_columns(df):
     df = df.filter(items=COLUMNS_TO_INCLUDE)
-    # df = df.drop(['NHLid'], axis=1)
     return df
 
 
