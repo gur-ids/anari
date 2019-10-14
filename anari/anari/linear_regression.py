@@ -159,9 +159,22 @@ def filter_columns(df):
     return df
 
 
-def combine_data(left, right):
-    result = pd.merge(left, right, on='NHLid')
-    return result
+def combine_data(left, right, latest):
+    combined_df = pd.merge(
+        left['df'],
+        right['df'],
+        on='NHLid',
+        how='inner',
+        suffixes=(left['suffix'], right['suffix']),
+    )
+
+    df = pd.DataFrame()
+    df['2017_PTS'] = latest['PTS']
+    df['NHLid'] = latest['NHLid']
+
+    df = combined_df.merge(df, how='inner', on=['NHLid'])
+
+    return df
 
 
 def pre_process_linear():
@@ -185,13 +198,13 @@ def pre_process_linear():
     df_2016 = transform_categorical(df_2016)
     df_2015 = transform_categorical(df_2015)
 
-    previous_seasons_df = combine_data(df_2015, df_2016)
+    linear_df = combine_data(
+        {'df': df_2015, 'suffix': '_2015'},
+        {'df': df_2016, 'suffix': '_2016'},
+        df_2017
+    )
 
-    linear_df = pd.DataFrame()
-    linear_df['2017_PTS'] = df_2017['PTS']
-    linear_df['NHLid'] = df_2017['NHLid']
-
-    linear_df = previous_seasons_df.merge(linear_df, how='inner', on=['NHLid'])
+    # Finally drop NHLid
     linear_df = linear_df.drop(['NHLid'], axis=1)
 
     return linear_df, df_2017
