@@ -197,16 +197,24 @@ def pre_process_linear():
     df_2016 = transform_categorical(df_2016)
     df_2015 = transform_categorical(df_2015)
 
-    linear_df = combine_data(
+    training_df = combine_data(
         {'df': df_2015, 'suffix': '_previous'},
         {'df': df_2016, 'suffix': '_next'},
         df_2017
     )
 
     # Finally drop NHLid
-    linear_df = linear_df.drop(['NHLid'], axis=1)
+    training_df = training_df.drop(['NHLid'], axis=1)
 
-    return linear_df, df_2017
+    forecast_df = combine_data(
+        {'df': df_2016, 'suffix': '_previous'},
+        {'df': df_2017, 'suffix': '_next'},
+        df_2017
+    )
+
+    forecast_df = forecast_df.drop(['2017_PTS'], axis=1)
+
+    return training_df, forecast_df, df_2017
 
 
 def do_linear(df):
