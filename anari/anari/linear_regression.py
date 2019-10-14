@@ -199,8 +199,8 @@ def pre_process_linear():
     df_2015 = transform_categorical(df_2015)
 
     linear_df = combine_data(
-        {'df': df_2015, 'suffix': '_2015'},
-        {'df': df_2016, 'suffix': '_2016'},
+        {'df': df_2015, 'suffix': '_previous'},
+        {'df': df_2016, 'suffix': '_next'},
         df_2017
     )
 
