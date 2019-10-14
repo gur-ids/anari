@@ -4,6 +4,10 @@ from datetime import datetime
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+# randomforest
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor# Instantiate model with 1000 decision trees
+rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 
 NA_VALUES = ['#DIV/0!']
 
@@ -210,9 +214,38 @@ def do_linear(df):
     lm.fit(X_train, y_train)
     y_pred = lm.predict(X_test)
     coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])  
-    print(coeff_df)
+   # print(coeff_df)
+    errors = abs(y_pred - y_test)# Print out the mean absolute error (mae)
+    print('linear')
+    print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+   # print(errors)
+    # Calculate mean absolute percentage error (MAPE)
+    mape = 100 * (errors / y_test)# Calculate and display accuracy
+    accuracy = 100 - np.mean(mape)
+    print('Accuracy:', round(accuracy, 2), '%.')
+    return X_train, X_test, y_train, y_test, y_pred
+
+def do_forest(df):
+    y = df['PTS']
+    X = df.drop(['PTS'], axis=1)
+#    X = X.drop(['G', 'A'], axis=1)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y)
+    rf.fit(X_train, y_train)
+    # Use the forest's predict method on the test data
+    y_pred = rf.predict(X_test)# Calculate the absolute errors
+    errors = abs(y_pred - y_test)# Print out the mean absolute error (mae)
+    print('forest')
+    print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+    #print(errors)
+    # Calculate mean absolute percentage error (MAPE)
+    mape = 100 * (errors / y_test)# Calculate and display accuracy
+    accuracy = 100 - np.mean(mape)
+    print('Accuracy:', round(accuracy, 2), '%.')
 
     return X_train, X_test, y_train, y_test, y_pred
+
+
 
 def predict_player(prediction_target):
     return lm.predict(prediction_target)

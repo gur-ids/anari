@@ -16,6 +16,8 @@ df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 linear_df = lr.pre_process_linear()
+
+X_train2, X_test2, y_train2, y_test2, y_pred2 = lr.do_forest(linear_df)
 X_train, X_test, y_train, y_test, y_pred = lr.do_linear(linear_df)
 
 # handling pre-processed data
@@ -51,6 +53,7 @@ def render_content(tab):
         return html.Div(children=[
             g.scatter_matrix(linear_df),
             g.regression_scatter(X_train, X_test, y_train, y_test, y_pred),
+            g.regression_scatter(X_train2, X_test2, y_train2, y_test2, y_pred2),
             html.Div([
                 html.Div([
                     dcc.Dropdown(
