@@ -16,7 +16,6 @@ lm = LinearRegression()
 
 COLUMNS_TO_INCLUDE = [
     'Age',
-    'Seasons',
     'NHLid',
     'Position',
     'GP',
@@ -89,17 +88,9 @@ def fill_id(first_name, last_name, df_next_year):
     return player_id
 
 
-def fill_seasons(x, df_next_year):
-    # NOTE: The function could find season data from all the following seasons
-    # NaN if player does not have data available
-    seasons_next_year = df_next_year.loc[df_next_year['NHLid'] == x, 'Seasons']
-    return seasons_next_year.iloc[0] - 1 if not seasons_next_year.empty else float('nan')
-
-
-def format_columns_2016(df, df_2017):
+def format_columns_2016(df):
     df = df.rename(columns={'Born': 'Age'})
     df['PTS/GP'] = df['PTS'] / df['GP']
-    df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2017,))
 
     return df
 
@@ -108,7 +99,6 @@ def format_columns_2015(df, df_2016):
     df = df.rename(columns={'Pos': 'Position', 'TOI/G': 'TOI/GP', 'IPP': 'IPP%'})
     df['PTS/GP'] = df['PTS'] / df['GP']
     df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
-    df['Seasons'] = df['NHLid'].apply(fill_seasons, args=(df_2016,))
 
     return df
 
@@ -126,7 +116,7 @@ def pre_process_2017():
     return df
 
 
-def pre_process_2016(df_2017):
+def pre_process_2016():
     path = '../data/NHL_2016-17.csv'
 
     df = pd.read_csv(
@@ -144,7 +134,7 @@ def pre_process_2016(df_2017):
         engine='python',
     )
 
-    df = format_columns_2016(df, df_2017)
+    df = format_columns_2016(df)
 
     return df
 
@@ -187,7 +177,7 @@ def transform_categorical(df):
 
 def filter_columns(df):
     df = df.filter(items=COLUMNS_TO_INCLUDE)
-    df = df.drop(['Age', 'Seasons'], axis=1)
+    df = df.drop(['Age'], axis=1)
     # df = df.drop(['NHLid'], axis=1)
     return df
 
@@ -199,7 +189,7 @@ def combine_data(left, right):
 
 def pre_process_linear():
     df_2017 = pre_process_2017()
-    df_2016 = pre_process_2016(df_2017)
+    df_2016 = pre_process_2016()
     df_2015 = pre_process_2015(df_2016)
 
     df_2017 = filter_columns(df_2017)
