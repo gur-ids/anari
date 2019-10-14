@@ -2,7 +2,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 
-
 def generate_table(dataframe, max_rows=10):
     return html.Table(
         # Header
@@ -39,7 +38,7 @@ def scatter_plot_toi_pts(plot_id, df):
         # https://plot.ly/python/bubble-charts/#scaling-the-size-of-bubble-charts
         df_by_position = df[df['Position'] == i]
         size = df_by_position['Cap Hit']
-        sizeref = 2.*max(size)/(15.**2)
+        sizeref = 4.*max(size)/(25.**2)
 
         text = df[df['Position'] == i]['H-Ref Name']
 
