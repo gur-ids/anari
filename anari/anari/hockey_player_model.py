@@ -33,5 +33,5 @@ def offenders(pre_processed_data):
     return pts_forward
 
 
-def write_to_csv(df):
-    df.to_csv('../data/preprocessed.csv')
+def write_to_csv(df, name, has_index=False):
+    df.to_csv('../data/{0}'.format(name), index=has_index)

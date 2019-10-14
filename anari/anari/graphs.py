@@ -2,7 +2,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 
-
 def generate_table(dataframe, max_rows=10):
     return html.Table(
         # Header
@@ -39,7 +38,7 @@ def scatter_plot_toi_pts(plot_id, df):
         # https://plot.ly/python/bubble-charts/#scaling-the-size-of-bubble-charts
         df_by_position = df[df['Position'] == i]
         size = df_by_position['Cap Hit']
-        sizeref = 2.*max(size)/(15.**2)
+        sizeref = 4.*max(size)/(25.**2)
 
         text = df[df['Position'] == i]['H-Ref Name']
 
@@ -158,6 +157,61 @@ def cap_hit_distribution(df):
                 'layout': {
                     'title': 'Cap Hit distribution',
                 },
+            }
+        )
+    )
+
+
+def scatter_matrix(df):
+    dimensions = [dict(label=column, values=df[column]) for column in df.columns]
+    index_vals = df['Position'].astype('category').cat.codes
+
+    trace = go.Splom(
+        dimensions=dimensions,
+        diagonal_visible=False,
+        text=df['Position'],
+        marker=dict(
+            color=index_vals,
+            showscale=False,    # colors encode categorical variables
+            line_color='white',
+            line_width=0.5
+        )
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': [trace],
+                'layout': go.Layout(
+                    title='Scatter matrix',
+                    width=1000,
+                    height=1000,
+                    autosize=True,
+                )
+            }
+        )
+    )
+
+
+def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
+    trace0 = go.Scatter(
+        x=y_test,
+        y=y_pred,
+        name='TOI/GP',
+        mode='markers',
+    )
+
+    data = [trace0]
+
+    layout = go.Layout(
+        title='Regression scatter',
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': data,
+                'layout': layout,
             }
         )
     )

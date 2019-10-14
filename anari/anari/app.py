@@ -9,10 +9,15 @@ import hockey_player_model as hpm
 import team_model as tm
 import view as v
 from notes import notes
+import linear_regression as lr
 
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
+
+linear_df, latest_df = lr.pre_process_linear()
+
+X_train, X_test, y_train, y_test, y_pred = lr.do_linear(linear_df)
 
 # handling pre-processed data
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
@@ -28,6 +33,7 @@ app.layout = html.Div([
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
         dcc.Tab(label='Basic Info', value='basic-info-tab'),
         dcc.Tab(label='Team stats', value='team-stats'),
+        dcc.Tab(label='Linear regression', value='linear-regression'),
     ]),
     html.Div(id='tabs-content'),
 ])
@@ -37,9 +43,15 @@ app.layout = html.Div([
 def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(children=[
+            html.H2(children=['Performance of well paid players']),
             g.box_plot_by_points(top_players_df),
             g.scatter_plot_toi_pts('toi_pts', top_players_df),
             dcc.Markdown(notes),
+        ])
+    elif tab == 'linear-regression':
+        return html.Div(children=[
+            g.scatter_matrix(latest_df),
+            g.regression_scatter(X_train, X_test, y_train, y_test, y_pred),
         ])
     elif tab == 'team-stats':
         return html.Div(id='render_team_stats')
@@ -57,18 +69,26 @@ position_agg_method = [
     {'label': 'Sum', 'value': 'sum'},
 ]
 
-left_table_y_label = ['+/-', 'Age', 'Salary', 'Cap Hit', 'TOI/GP', 'IPP%', 'PAX']
-right_table_x_label = ['+/-', 'Age', 'PTS', 'Cap Hit', 'TOI/GP', 'PAX', 'IPP%', 'Salary']
+dropdown_label_values = [
+    {'value': '+/-', 'label': 'points gained or lost in total while on ice during even game'},
+    {'value': 'Age', 'label': 'Age of player'},
+    {'value': 'Salary', 'label': 'Yearly salary'},
+    {'value': 'Cap Hit', 'label': 'Yearly salary without bonuses'},
+    {'value': 'TOI/GP', 'label': 'Time on ice per game played'},
+    {'value': 'IPP%', 'label': 'Percentage of being present on ice during goals vs all goals'},
+    {'value': 'PTS', 'label': 'Points (Assists + Scored goals)'}
+]
 
 @app.callback(Output('render_team_stats', 'children'),
               [Input('tabs', 'value')])
 def render_team_stats(tab):
     return html.Div([
+        html.H2(children='Team composition and statistics'),
         html.Div([
             html.Div([
                 dcc.Dropdown(
                     id='y_axis_condition',
-                    options=[{'label': i, 'value': i} for i in left_table_y_label],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in dropdown_label_values],
                     value='+/-'),
                 dcc.Checklist(
                     id='player_position_filter',
@@ -86,7 +106,7 @@ def render_team_stats(tab):
             html.Div([
                 dcc.Dropdown(
                     id='x_axis_condition',
-                    options=[{'label': i, 'value': i} for i in right_table_x_label],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in dropdown_label_values],
                     value='PTS')
             ], className="six columns")
         ], className="row"),
@@ -98,13 +118,14 @@ def render_team_stats(tab):
 
             html.Div(
                 children=[
-                    html.Div(id='team-details-scatter'),
-                    html.Div(id='team-details-distribution'),
-                    html.Div(id='team-details-top-paid'),
-                ],
-                className="six columns",
+                    html.Div(id='team-details-scatter')
+                ], className="six columns",
             )
-        ], className="row")
+        ], className="row"),
+        html.H2(id='team-name-h2-distribution'),
+        html.Div(id='team-details-distribution'),
+        html.H2(id='team-name-h2-top3'),
+        html.Div(id='team-details-top-paid'),
 
     ], style={'display': 'none' if tab != 'team-stats' else 'block'})
 
@@ -138,6 +159,8 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
         Output('team-details-scatter', 'children'),
         Output('team-details-distribution', 'children'),
         Output('team-details-top-paid', 'children'),
+        Output('team-name-h2-distribution', 'children'),
+        Output('team-name-h2-top3', 'children')
     ],
     [
         Input('teams-overview', 'hoverData'),
@@ -147,6 +170,9 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
     ])
 def update_detailed_team_graphs(hoverData, player_positions, criteria, other_criteria):
     team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
+    team_name_full = hoverData['points'][0]['text'] if hoverData is not None else 'Nashville Predators'
+    h2_distribution = 'Cap hit distribution of ' + team_name_full
+    h2_top3 = 'Statistics of the top 3 players in ' + team_name_full
     players = tm.get_team(df, team_name)
     players = players[players.Position.isin(player_positions)]
 
@@ -168,8 +194,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
         html.P(v.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
         html.P(v.top_paid_points_text(top_paid_points, points)),
     ]
-
-    return scatter, distribution, top_paid
+    return scatter, distribution, top_paid, h2_distribution, h2_top3
 
 
 # run webapp if main
