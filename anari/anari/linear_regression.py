@@ -227,7 +227,3 @@ def do_linear(df):
     accuracy = 100 - np.mean(mape)
 
     return X_train, X_test, y_train, y_test, y_pred
-
-
-def predict_player(prediction_target):
-    return lm.predict(prediction_target)

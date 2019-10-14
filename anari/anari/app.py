@@ -52,22 +52,10 @@ def render_content(tab):
         return html.Div(children=[
             g.scatter_matrix(latest_df),
             g.regression_scatter(X_train, X_test, y_train, y_test, y_pred),
-            html.Div([
-                html.Div([
-                    dcc.Dropdown(
-                        id='predict_a_player',
-                        options=[{'label': r[9], 'value': r[8]} for r in df.itertuples()])
-                ], className="six columns"),
-                html.Div([
-                    dcc.Dropdown(
-                        id='predict_a_player_result',
-                        options=[{'label': 'prediction result', 'value': 123}],
-                        value=123)
-                ], className="six columns")
-            ], className="row")
         ])
     elif tab == 'team-stats':
         return html.Div(id='render_team_stats')
+
 
 position_filter_data = [
     {'label': 'Center', 'value': 'C'},
