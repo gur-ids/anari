@@ -193,18 +193,23 @@ def scatter_matrix(df):
     )
 
 
-def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
+def regression_scatter(y_test, y_pred, category):
+    import numpy as np
+    #print(y_test)
+    #print(y_pred)
+   # for i in np.arange(0, len(y_pred) -1):
+    #        print(y_test.iloc[[i]], y_pred[i])
     trace0 = go.Scatter(
         x=y_test,
         y=y_pred,
-        name='PTS',
+        name=category,
         mode='markers',
     )
 
     data = [trace0]
 
     layout = go.Layout(
-        title='Regression scatter',
+        title='Regression scatter performance on ' + category,
     )
 
     return (

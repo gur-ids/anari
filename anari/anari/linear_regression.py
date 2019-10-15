@@ -6,6 +6,12 @@ from sklearn.model_selection import train_test_split
 NA_VALUES = ['#DIV/0!']
 
 lm = LinearRegression()
+models = dict({
+    "PTS":LinearRegression(),
+    "A":LinearRegression(),
+    "G":LinearRegression(),
+    "+/-":LinearRegression(),
+    "TOI/GP":LinearRegression()}) 
 
 COLUMNS_TO_INCLUDE = [
     'NHLid',
@@ -163,8 +169,12 @@ def combine_data(left, right, latest):
     )
 
     df = pd.DataFrame()
-    df['2017_PTS'] = latest['PTS']
     df['NHLid'] = latest['NHLid']
+
+
+    for category, model in models.items():
+        df['latest_' + category] = latest[category]
+
 
     df = combined_df.merge(df, how='inner', on=['NHLid'])
 
@@ -206,41 +216,53 @@ def pre_process_linear():
         {'df': df_2017, 'suffix': '_next'},
         df_2017
     )
-    forecast_df = forecast_df.drop(['2017_PTS'], axis=1)
 
     return training_df, forecast_df, df_2017
 
 
-def do_linear(df):
-    y = df['2017_PTS']
-    X = df.drop(['2017_PTS'], axis=1)
-    # X = X.drop(['G', 'A'], axis=1)
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y)
-    lm.fit(X_train, y_train)
-    y_pred = lm.predict(X_test)
-    coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
-    print(coeff_df)
-    errors = abs(y_pred - y_test)   # Print out the mean absolute error (mae)
-    # print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
-    # Calculate mean absolute percentage error (MAPE)
-    mape = 100 * (errors / y_test)  # Calculate and display accuracy
-    accuracy = 100 - np.mean(mape)
-
-    return X_train, X_test, y_train, y_test, y_pred
+def train_models(df):
+    X = df
+    test_data = pd.DataFrame()
+    regression_stats = dict()
+    for category, model in models.items(): #delete test result cols
+        test_data['latest_' + category] = X['latest_' + category]
+        X = X.drop(['latest_' + category], axis=1)
+    
+    for category, model in models.items():
+        y = df['latest_' + category]
+        X_train, X_test, y_train, y_test = train_test_split(X, y)
+        lm = models[category]
+        lm.fit(X_train, y_train)
+        y_pred = lm.predict(X_test)
+        
+        print(category)
+        coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
+        # print(coeff_df)
+        errors = abs(y_pred - y_test) 
+        print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+        
+        regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred})
+    return regression_stats
 
 def forecast(df):
-    return lm.predict(df.drop(['NHLid'], axis=1))
+    predict_df = df.drop(['NHLid'], axis=1)
+    for category, model in models.items(): #delete test result cols
+        predict_df = predict_df.drop(['latest_' + category], axis=1)
+    result_df = pd.DataFrame()
+    for category, model in models.items(): #delete test result cols
+        result_on_category = models[category].predict(predict_df)
+        df['forecast_' + category] = result_on_category
+
+    return df
+
 
 def get_forecast_visual_data(df_full, forecast_df):
-    forecast_results = forecast(forecast_df)
-
     cap_hit_df = pd.DataFrame()
     cap_hit_df['Cap Hit'] = df_full['Cap Hit']
     cap_hit_df['H-Ref Name'] = df_full['H-Ref Name']
     cap_hit_df['NHLid'] = df_full['NHLid']
     cap_hit_df['Position'] = df_full['Position']
 
+    forecast_results = forecast(forecast_df)
     forecast_df = forecast_df.merge(cap_hit_df, left_on='NHLid', right_on='NHLid', how='inner')
-    forecast_df['forecast_PTS'] = forecast_results
     return forecast_df
