@@ -193,18 +193,23 @@ def scatter_matrix(df):
     )
 
 
-def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
+def regression_scatter(y_test, y_pred, category):
+    import numpy as np
+    #print(y_test)
+    #print(y_pred)
+   # for i in np.arange(0, len(y_pred) -1):
+    #        print(y_test.iloc[[i]], y_pred[i])
     trace0 = go.Scatter(
         x=y_test,
         y=y_pred,
-        name='PTS',
+        name=category,
         mode='markers',
     )
 
     data = [trace0]
 
     layout = go.Layout(
-        title='Regression scatter',
+        title='Regression scatter performance on ' + category,
     )
 
     return (
@@ -217,14 +222,6 @@ def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
     )
 
 def forecast_regression_scatter(df):
-    '''trace0 = go.Scatter(
-        x=players['forecast_PTS'],
-        y=players['Cap Hit'],
-        name='PTS',
-        mode='markers',
-    )
-
-    data = [trace0]'''
     traces=[]
     for i in df.Position.unique():
         traces.append(go.Scatter(
@@ -241,6 +238,7 @@ def forecast_regression_scatter(df):
         ))
     layout = go.Layout(
         title='Expected points in next season and current salary',
+        hovermode='closest',
     )
 
     return (
