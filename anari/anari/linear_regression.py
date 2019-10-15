@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -7,11 +6,12 @@ NA_VALUES = ['#DIV/0!']
 
 lm = LinearRegression()
 models = dict({
-    "PTS":LinearRegression(),
-    "+/-":LinearRegression(),
-    "A":LinearRegression(),
-    "G":LinearRegression(),
-    "TOI":LinearRegression()})
+    "PTS": LinearRegression(),
+    "+/-": LinearRegression(),
+    "A": LinearRegression(),
+    "G": LinearRegression(),
+    "TOI": LinearRegression()
+})
 
 COLUMNS_TO_INCLUDE = [
     'NHLid',
@@ -254,10 +254,8 @@ def combine_data(left, right, latest):
     df = pd.DataFrame()
     df['NHLid'] = latest['NHLid']
 
-
     for category in models.keys():
         df['latest_' + category] = latest[category]
-
 
     df = combined_df.merge(df, how='inner', on=['NHLid'])
 
@@ -309,7 +307,7 @@ def train_models(df):
     X = df
     test_data = pd.DataFrame()
     regression_stats = dict()
-    for category in models.keys(): #delete test result cols
+    for category in models.keys():  # delete test result cols
         test_data['latest_' + category] = X['latest_' + category]
         X = X.drop(['latest_' + category], axis=1)
 
@@ -320,21 +318,22 @@ def train_models(df):
         y_pred = lm.predict(X_test)
 
         # evaluation on model
-        #print(category)
-        #coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
+        # print(category)
+        # coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
         # print(coeff_df)
-        #errors = abs(y_pred - y_test)
-        #print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+        # errors = abs(y_pred - y_test)
+        # print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 
         regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred})
     return regression_stats
 
+
 def forecast(df):
     predict_df = df.drop(['NHLid'], axis=1)
-    for category in models.keys(): #delete test result cols
+    for category in models.keys():  # delete test result cols
         predict_df = predict_df.drop(['latest_' + category], axis=1)
     result_df = pd.DataFrame()
-    for category in models.keys(): #delete test result cols
+    for category in models.keys():  # delete test result cols
         result_on_category = models[category].predict(predict_df)
         df['forecast_' + category] = result_on_category
 

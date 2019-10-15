@@ -2,6 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 
+
 def generate_table(dataframe, max_rows=10):
     return html.Table(
         # Header
@@ -194,11 +195,6 @@ def scatter_matrix(df):
 
 
 def regression_scatter(y_test, y_pred, category):
-    import numpy as np
-    #print(y_test)
-    #print(y_pred)
-   # for i in np.arange(0, len(y_pred) -1):
-    #        print(y_test.iloc[[i]], y_pred[i])
     trace0 = go.Scatter(
         x=y_test,
         y=y_pred,
@@ -221,8 +217,9 @@ def regression_scatter(y_test, y_pred, category):
         )
     )
 
+
 def forecast_regression_scatter(df):
-    traces=[]
+    traces = []
     for i in df.Position.unique():
         traces.append(go.Scatter(
             x=df[df['Position'] == i]['forecast_PTS'],
