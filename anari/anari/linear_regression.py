@@ -348,8 +348,6 @@ def get_forecast_visual_data(df_full, forecast_df):
     cap_hit_df['NHLid'] = df_full['NHLid']
     cap_hit_df['Position'] = df_full['Position']
 
-
-def forecast(df):
     forecast_results = forecast(forecast_df)
     forecast_df = forecast_df.merge(cap_hit_df, left_on='NHLid', right_on='NHLid', how='inner')
     return forecast_df
