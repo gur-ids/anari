@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import pandas as pd
 
 import graphs as g
 import hockey_player_fun as hpf
@@ -18,6 +19,16 @@ teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 training_df, forecast_df, latest_df = lr.pre_process_linear()
 
 X_train, X_test, y_train, y_test, y_pred = lr.do_linear(training_df)
+forecast_results = lr.forecast(forecast_df)
+
+cap_hit_df = pd.DataFrame()
+cap_hit_df['Cap Hit'] = df['Cap Hit']
+cap_hit_df['H-Ref Name'] = df['H-Ref Name']
+cap_hit_df['NHLid'] = df['NHLid']
+cap_hit_df['Position'] = df['Position']
+
+forecast_df = forecast_df.merge(cap_hit_df, left_on='NHLid', right_on='NHLid', how='inner')
+forecast_df['forecast_PTS'] = forecast_results
 
 # handling pre-processed data
 top_players_df = hpf.filter_players_by(df, 'Cap Hit', 4000000)
@@ -52,6 +63,7 @@ def render_content(tab):
         return html.Div(children=[
             g.scatter_matrix(latest_df),
             g.regression_scatter(X_train, X_test, y_train, y_test, y_pred),
+            g.forecast_regression_scatter(forecast_df) #############
         ])
     elif tab == 'team-stats':
         return html.Div(id='render_team_stats')

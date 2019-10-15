@@ -197,7 +197,7 @@ def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
     trace0 = go.Scatter(
         x=y_test,
         y=y_pred,
-        name='TOI/GP',
+        name='PTS',
         mode='markers',
     )
 
@@ -211,6 +211,42 @@ def regression_scatter(X_train, X_test, y_train, y_test, y_pred):
         dcc.Graph(
             figure={
                 'data': data,
+                'layout': layout,
+            }
+        )
+    )
+
+def forecast_regression_scatter(df):
+    '''trace0 = go.Scatter(
+        x=players['forecast_PTS'],
+        y=players['Cap Hit'],
+        name='PTS',
+        mode='markers',
+    )
+
+    data = [trace0]'''
+    traces=[]
+    for i in df.Position.unique():
+        traces.append(go.Scatter(
+            x=df[df['Position'] == i]['forecast_PTS'],
+            y=df[df['Position'] == i]['Cap Hit'],
+            text=df[df['Position'] == i]['H-Ref Name'],
+            mode='markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+    layout = go.Layout(
+        title='Expected points in next season and current salary',
+    )
+
+    return (
+        dcc.Graph(
+            figure={
+                'data': traces,
                 'layout': layout,
             }
         )

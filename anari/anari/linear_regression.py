@@ -1,12 +1,7 @@
 import numpy as np
 import pandas as pd
-# randomforest
-from sklearn.ensemble import \
-    RandomForestRegressor  # Instantiate model with 1000 decision trees
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-
-rf = RandomForestRegressor(n_estimators=1000, random_state=42)
 
 NA_VALUES = ['#DIV/0!']
 
@@ -211,7 +206,6 @@ def pre_process_linear():
         {'df': df_2017, 'suffix': '_next'},
         df_2017
     )
-
     forecast_df = forecast_df.drop(['2017_PTS'], axis=1)
 
     return training_df, forecast_df, df_2017
@@ -234,3 +228,6 @@ def do_linear(df):
     accuracy = 100 - np.mean(mape)
 
     return X_train, X_test, y_train, y_test, y_pred
+
+def forecast(df):
+    return lm.predict(df.drop(['NHLid'], axis=1))
