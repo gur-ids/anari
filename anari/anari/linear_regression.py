@@ -8,9 +8,9 @@ NA_VALUES = ['#DIV/0!']
 lm = LinearRegression()
 models = dict({
     "PTS":LinearRegression(),
+    "+/-":LinearRegression(),
     "A":LinearRegression(),
     "G":LinearRegression(),
-    "+/-":LinearRegression(),
     "TOI/GP":LinearRegression()}) 
 
 COLUMNS_TO_INCLUDE = [
@@ -172,7 +172,7 @@ def combine_data(left, right, latest):
     df['NHLid'] = latest['NHLid']
 
 
-    for category, model in models.items():
+    for category in models.keys():
         df['latest_' + category] = latest[category]
 
 
@@ -202,6 +202,8 @@ def pre_process_linear():
     df_2016 = transform_categorical(df_2016)
     df_2015 = transform_categorical(df_2015)
 
+    fill = pd.DataFrame()
+    fill['NHLid'] = df_2016['NHLid']
     training_df = combine_data(
         {'df': df_2015, 'suffix': '_previous'},
         {'df': df_2016, 'suffix': '_next'},
@@ -224,32 +226,32 @@ def train_models(df):
     X = df
     test_data = pd.DataFrame()
     regression_stats = dict()
-    for category, model in models.items(): #delete test result cols
+    for category in models.keys(): #delete test result cols
         test_data['latest_' + category] = X['latest_' + category]
         X = X.drop(['latest_' + category], axis=1)
     
-    for category, model in models.items():
+    for category, lm in models.items():
         y = df['latest_' + category]
-        X_train, X_test, y_train, y_test = train_test_split(X, y)
-        lm = models[category]
+        X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=100)
         lm.fit(X_train, y_train)
         y_pred = lm.predict(X_test)
         
-        print(category)
-        coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
+        # evaluation on model
+        #print(category)
+        #coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
         # print(coeff_df)
-        errors = abs(y_pred - y_test) 
-        print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+        #errors = abs(y_pred - y_test) 
+        #print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
         
         regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred})
     return regression_stats
 
 def forecast(df):
     predict_df = df.drop(['NHLid'], axis=1)
-    for category, model in models.items(): #delete test result cols
+    for category in models.keys(): #delete test result cols
         predict_df = predict_df.drop(['latest_' + category], axis=1)
     result_df = pd.DataFrame()
-    for category, model in models.items(): #delete test result cols
+    for category in models.keys(): #delete test result cols
         result_on_category = models[category].predict(predict_df)
         df['forecast_' + category] = result_on_category
 
