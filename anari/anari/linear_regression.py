@@ -17,6 +17,34 @@ COLUMNS_TO_INCLUDE = [
     '+/-',
     'TOI',
     'IPP%',
+    'Shots',
+    'Shots_missed',
+    'Shots_cbar',
+    'Shots_post',
+]
+
+COLUMNS_TO_INCLUDE_2017 = [
+    'NHLid',
+    'Position',
+    'GP',
+    'G',
+    'A',
+    'PTS',
+    '+/-',
+    'TOI',
+    'IPP%',
+
+    'CBar ',    # Notice the whitespace
+    'Post',
+    'S.Bkhd',
+    'S.Dflct',
+    'Over',
+    'S.Slap',
+    'S.Snap',
+    'S.Tip',
+    'S.Wrap',
+    'S.Wrst',
+    'Wide',
 ]
 
 COLUMNS_TO_INCLUDE_2016 = [
@@ -31,6 +59,18 @@ COLUMNS_TO_INCLUDE_2016 = [
     '+/-',
     'TOI',
     'IPP%',
+
+    'CBar ',    # Notice the whitespace
+    'Post',
+    'Over',
+    'S.Bkhd',
+    'S.Dflct',
+    'S.Slap',
+    'S.Snap',
+    'S.Tip',
+    'S.Wrap',
+    'S.Wrst',
+    'Wide',
 ]
 
 COLUMNS_TO_INCLUDE_2015 = [
@@ -44,6 +84,18 @@ COLUMNS_TO_INCLUDE_2015 = [
     '+/-',
     'TOI',
     'IPP',
+
+    'Crossbar',       # CBar
+    'Post',
+    'Backhand',       # S.Bkhd
+    'Deflected',      # S.Dflct
+    'OverNet',        # S.Over
+    'Slap',           # S.Slap
+    'Snap',           # S.Snap
+    'Tipped',         # S.Tip
+    'WideOfNet',      # S.Wide
+    'Wraparound',     # S.Wrap
+    'Wrist',          # S.Wrist
 ]
 
 
@@ -72,8 +124,35 @@ def fill_id(first_name, last_name, df_next_year):
     return player_id
 
 
+def sum_columns(df, shots_columns):
+    return df[shots_columns].sum(axis=1)
+
+
+def format_columns_2017(df):
+    df['Shots'] = sum_columns(df, ['S.Bkhd', 'S.Dflct', 'S.Slap', 'S.Snap', 'S.Tip', 'S.Wrap', 'S.Wrst'])
+    df['Shots_missed'] = sum_columns(df, ['Over', 'Wide'])
+    df = df.rename(columns={'CBar ': 'Shots_cbar', 'Post': 'Shots_post'})   # Notice the whitespace
+    return df
+
+
+def format_columns_2016(df):
+    df['Shots'] = sum_columns(df, ['S.Bkhd', 'S.Dflct', 'S.Slap', 'S.Snap', 'S.Tip', 'S.Wrap', 'S.Wrst'])
+    df['Shots_missed'] = sum_columns(df, ['Over', 'Wide'])
+    df = df.rename(columns={'CBar ': 'Shots_cbar', 'Post': 'Shots_post'})   # Notice the whitespace
+    return df
+
+
 def format_columns_2015(df, df_2016):
-    df = df.rename(columns={'Pos': 'Position', 'IPP': 'IPP%'})
+    df['Shots'] = sum_columns(df, ['Backhand', 'Deflected', 'Slap', 'Snap', 'Tipped', 'Wraparound', 'Wrist'])
+    df['Shots_missed'] = sum_columns(df, ['OverNet', 'WideOfNet'])
+
+    df = df.rename(columns={
+        'Pos': 'Position',
+        'IPP': 'IPP%',
+        'Crossbar': 'Shots_cbar',
+        'Post': 'Shots_post'
+    })
+
     df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
 
     return df
@@ -85,9 +164,11 @@ def pre_process_2017():
     df = pd.read_csv(
         path,
         header=2,
-        usecols=COLUMNS_TO_INCLUDE,
+        usecols=COLUMNS_TO_INCLUDE_2017,
         converters={'Position': parse_position, 'IPP%': parse_ipp},
     )
+
+    df = format_columns_2017(df)
 
     return df
 
@@ -108,6 +189,8 @@ def pre_process_2016():
         # https://github.com/pandas-dev/pandas/issues/13302
         engine='python',
     )
+
+    df = format_columns_2016(df)
 
     return df
 
