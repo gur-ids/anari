@@ -222,14 +222,6 @@ def regression_scatter(y_test, y_pred, category):
     )
 
 def forecast_regression_scatter(df):
-    '''trace0 = go.Scatter(
-        x=players['forecast_PTS'],
-        y=players['Cap Hit'],
-        name='PTS',
-        mode='markers',
-    )
-
-    data = [trace0]'''
     traces=[]
     for i in df.Position.unique():
         traces.append(go.Scatter(
@@ -246,6 +238,7 @@ def forecast_regression_scatter(df):
         ))
     layout = go.Layout(
         title='Expected points in next season and current salary',
+        hovermode='closest',
     )
 
     return (
