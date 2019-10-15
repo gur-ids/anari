@@ -15,7 +15,7 @@ COLUMNS_TO_INCLUDE = [
     'A',
     'PTS',
     '+/-',
-    'TOI/GP',
+    'TOI',
     'IPP%',
 ]
 
@@ -29,7 +29,7 @@ COLUMNS_TO_INCLUDE_2016 = [
     'A',
     'PTS',
     '+/-',
-    'TOI/GP',
+    'TOI',
     'IPP%',
 ]
 
@@ -42,7 +42,7 @@ COLUMNS_TO_INCLUDE_2015 = [
     'A',
     'PTS',
     '+/-',
-    'TOI/G',
+    'TOI',
     'IPP',
 ]
 
@@ -73,7 +73,7 @@ def fill_id(first_name, last_name, df_next_year):
 
 
 def format_columns_2015(df, df_2016):
-    df = df.rename(columns={'Pos': 'Position', 'TOI/G': 'TOI/GP', 'IPP': 'IPP%'})
+    df = df.rename(columns={'Pos': 'Position', 'IPP': 'IPP%'})
     df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
 
     return df
