@@ -54,7 +54,7 @@ def render_content(tab):
             g.scatter_matrix(latest_df),
             g.regression_scatter(training_stats['PTS']['y_test'], training_stats['PTS']['y_pred'], 'PTS'),
             g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-'),
-            g.regression_scatter(training_stats['TOI/GP']['y_test'], training_stats['TOI/GP']['y_pred'], 'TOI/GP'),
+            g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
             g.regression_scatter(training_stats['G']['y_test'], training_stats['G']['y_pred'], 'G'),
             g.regression_scatter(training_stats['A']['y_test'], training_stats['A']['y_pred'], 'A'),
             g.forecast_regression_scatter(forecast_df)

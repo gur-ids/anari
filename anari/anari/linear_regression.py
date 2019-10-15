@@ -11,7 +11,7 @@ models = dict({
     "+/-":LinearRegression(),
     "A":LinearRegression(),
     "G":LinearRegression(),
-    "TOI/GP":LinearRegression()})
+    "TOI":LinearRegression()})
 
 COLUMNS_TO_INCLUDE = [
     'NHLid',
