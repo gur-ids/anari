@@ -231,3 +231,16 @@ def do_linear(df):
 
 def forecast(df):
     return lm.predict(df.drop(['NHLid'], axis=1))
+
+def get_forecast_visual_data(df_full, forecast_df):
+    forecast_results = forecast(forecast_df)
+
+    cap_hit_df = pd.DataFrame()
+    cap_hit_df['Cap Hit'] = df_full['Cap Hit']
+    cap_hit_df['H-Ref Name'] = df_full['H-Ref Name']
+    cap_hit_df['NHLid'] = df_full['NHLid']
+    cap_hit_df['Position'] = df_full['Position']
+
+    forecast_df = forecast_df.merge(cap_hit_df, left_on='NHLid', right_on='NHLid', how='inner')
+    forecast_df['forecast_PTS'] = forecast_results
+    return forecast_df
