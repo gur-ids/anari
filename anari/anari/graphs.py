@@ -195,6 +195,7 @@ def scatter_matrix(df):
 
 
 def regression_scatter(y_test, y_pred, category):
+
     trace0 = go.Scatter(
         x=y_test,
         y=y_pred,
@@ -202,7 +203,13 @@ def regression_scatter(y_test, y_pred, category):
         mode='markers',
     )
 
-    data = [trace0]
+    trace1 = go.Scatter(
+        x=[y_test.min(), y_test.max()],
+        y=[y_pred.min(), y_pred.max()],
+        mode='lines',
+    )
+
+    data = [trace0, trace1]
 
     layout = go.Layout(
         title='Regression scatter performance on ' + category,
