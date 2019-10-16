@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -303,10 +304,30 @@ def pre_process_linear():
     return training_df, forecast_df, df_2017
 
 
+def evaluate_model(lm, category, X, y_test, y_pred):
+    slope_df = pd.DataFrame({
+        'column': X.columns,
+        'slope': lm.coef_,
+    })
+
+    slope = slope_df.loc[slope_df['column'] == category + '_next', 'slope'].iloc[0]
+
+    errors = abs(y_pred - y_test)
+
+    print('Category:', category)
+    print('Intercept:', lm.intercept_)
+    print('Slope:', slope)
+    print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+    print('')
+    print(slope_df)
+    print('')
+
+
 def train_models(df):
     X = df
     test_data = pd.DataFrame()
     regression_stats = dict()
+
     for category in models.keys():  # delete test result cols
         test_data['latest_' + category] = X['latest_' + category]
         X = X.drop(['latest_' + category], axis=1)
@@ -316,15 +337,10 @@ def train_models(df):
         X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=100)
         lm.fit(X_train, y_train)
         y_pred = lm.predict(X_test)
-
         # evaluation on model
-        # print(category)
-        # coeff_df = pd.DataFrame(lm.coef_, X.columns, columns=['Coefficient'])
-        # print(coeff_df)
-        # errors = abs(y_pred - y_test)
-        # print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
-
+        # evaluate_model(lm, category, X, y_test, y_pred)
         regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred})
+
     return regression_stats
 
 
