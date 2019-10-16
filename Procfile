@@ -1,1 +1,1 @@
-gunicorn --chdir ./anari/anari/ app:server
+web: gunicorn --chdir ./anari/anari/ app:server
