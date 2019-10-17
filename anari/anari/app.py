@@ -6,9 +6,9 @@ from dash.dependencies import Input, Output
 import graphs as g
 import hockey_player_fun as hpf
 import hockey_player_model as hpm
-import team_model as tm
-from textual_view import *
 import linear_regression as lr
+import team_model as tm
+import textual_view as tv
 
 # initial pre-processing
 df = hpm.pre_process('../data/nhl_2017-2018.csv')
@@ -64,7 +64,7 @@ def render_content(tab):
             g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
             html.H3(children=['+/- had a strong correlation with team points but because of round-robin system in building teams we weren\'t able to make it work with linear regression.']),
             g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-')
-            
+
         ])
     elif tab == 'team-stats':
         return html.Div(id='render_team_stats')
@@ -78,17 +78,17 @@ def render_team_stats(tab):
             html.Div([
                 dcc.Dropdown(
                     id='y_axis_condition',
-                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in dropdown_label_values],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in tv.dropdown_label_values],
                     value='+/-'),
                 dcc.Checklist(
                     id='player_position_filter',
-                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in position_label_values],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in tv.position_label_values],
                     value=['C', 'D', 'LW', 'RW'],
                     labelStyle={'display': 'inline-block'}
                 ),
                 dcc.RadioItems(
                     id='agg_method',
-                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in position_agg_method],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in tv.position_agg_method],
                     value='mean',
                     labelStyle={'display': 'inline-block'}
                 )
@@ -96,7 +96,7 @@ def render_team_stats(tab):
             html.Div([
                 dcc.Dropdown(
                     id='x_axis_condition',
-                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in dropdown_label_values],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in tv.dropdown_label_values],
                     value='PTS')
             ], className="six columns")
         ], className="row"),
@@ -173,16 +173,16 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     points = tm.get_team_total_points(players)
     top_paid_points = hpf.points_share(top_paid_df, points)
 
-    title = team_detail_title(hoverData, criteria, other_criteria)
+    title = tv.team_detail_title(hoverData, criteria, other_criteria)
 
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
     distribution = g.cap_hit_distribution(players, team_name_full)
 
     top_paid = [
         g.generate_table(top_paid_df),
-        html.P(top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
-        html.P(top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
-        html.P(top_paid_points_text(top_paid_points, points)),
+        html.P(tv.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
+        html.P(tv.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
+        html.P(tv.top_paid_points_text(top_paid_points, points)),
     ]
     return scatter, distribution, top_paid, h2_distribution, h2_top3
 

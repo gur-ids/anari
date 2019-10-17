@@ -30,6 +30,7 @@ def name_salary(name, salary):
     milli = '${:,.2f}M'.format(salary/1000000)
     return name + ', ' + milli
 
+
 position_label_values = [
         {'label': 'Center', 'value': 'C'},
         {'label': 'Defenceman', 'value': 'D'},

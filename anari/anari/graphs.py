@@ -1,7 +1,8 @@
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
-from textual_view import *
+
+import textual_view as tv
 
 
 def generate_table(dataframe, max_rows=10):
@@ -41,7 +42,7 @@ def scatter_plot_toi_pts(plot_id, df):
         df_by_position = df[df['Position'] == i]
         size = df_by_position['Cap Hit']
         sizeref = 4.*max(size)/(25.**2)
-        text = df_by_position.apply(lambda x: name_salary(x['H-Ref Name'], x['Salary']), axis=1)
+        text = df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Salary']), axis=1)
 
         traces.append(go.Scatter(
             x=df_by_position['TOI/GP'],
@@ -122,7 +123,7 @@ def update_detailed_team_graphs(df, x_value, y_value, title):
                 'size': 15,
                 'line': {'width': 0.5, 'color': 'white'}
             },
-            name=next((d.get("label") for d in position_label_values if d.get('value') == i), 'Label not found')
+            name=next((d.get("label") for d in tv.position_label_values if d.get('value') == i), 'Label not found')
         ))
 
     return dcc.Graph(
@@ -238,7 +239,7 @@ def forecast_regression_scatter(df):
                 'size': 10,
                 'line': {'width': 0.5, 'color': 'white'}
             },
-            name=next((d.get("label") for d in position_label_values if d.get('value') == i), 'Label not found')
+            name=next((d.get("label") for d in tv.position_label_values if d.get('value') == i), 'Label not found')
         ))
     layout = go.Layout(
         title='Expected points in next season and current salary',
