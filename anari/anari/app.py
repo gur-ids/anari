@@ -193,7 +193,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     title = v.team_detail_title(hoverData, criteria, other_criteria)
 
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
-    distribution = g.cap_hit_distribution(players)
+    distribution = g.cap_hit_distribution(players, team_name_full)
 
     top_paid = [
         g.generate_table(top_paid_df),
