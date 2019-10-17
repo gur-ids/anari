@@ -185,6 +185,7 @@ def scatter_matrix(df):
             figure={
                 'data': [trace],
                 'layout': go.Layout(
+                    dragmode='select',
                     title='Scatter matrix',
                     width=1200,
                     height=1200,
