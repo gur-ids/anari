@@ -124,9 +124,27 @@ def render_team_stats(tab):
                 ], className="six columns",
             )
         ], className="row"),
-        html.H2(id='team-name-h2-distribution'),
-        html.Div(id='team-details-distribution'),
-        html.H2(id='team-name-h2-top3'),
+        html.H3(
+            style={'textAlign': 'center'},
+            id='team-name-heading-distribution'
+        ),
+        html.Div(
+            className='container',
+            children=[
+                html.Div(
+                    style={
+                        'marginLeft': '5em',
+                        'marginRight': '5em',
+                    },
+                    className='row',
+                    id='team-details-distribution',
+                ),
+            ],
+        ),
+        html.H3(
+            style={'textAlign': 'center'},
+            id='team-name-heading-top3',
+        ),
         html.Div(id='team-details-top-paid'),
 
     ], style={'display': 'none' if tab != 'team-stats' else 'block'})
@@ -161,8 +179,8 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
         Output('team-details-scatter', 'children'),
         Output('team-details-distribution', 'children'),
         Output('team-details-top-paid', 'children'),
-        Output('team-name-h2-distribution', 'children'),
-        Output('team-name-h2-top3', 'children')
+        Output('team-name-heading-distribution', 'children'),
+        Output('team-name-heading-top3', 'children')
     ],
     [
         Input('teams-overview', 'hoverData'),
@@ -173,8 +191,8 @@ def update_overview_team_graphs(player_positions, criteria, agg_method):
 def update_detailed_team_graphs(hoverData, player_positions, criteria, other_criteria):
     team_name = hoverData['points'][0]['customdata'] if hoverData is not None else 'NSH'
     team_name_full = hoverData['points'][0]['text'] if hoverData is not None else 'Nashville Predators'
-    h2_distribution = 'Cap hit distribution of ' + team_name_full
-    h2_top3 = 'Statistics of the top 3 players in ' + team_name_full
+    heading_distribution = 'Cap hit distribution of ' + team_name_full
+    heading_top3 = 'Statistics of the top 3 players in ' + team_name_full
     players = tm.get_team(df, team_name)
     players = players[players.Position.isin(player_positions)]
 
@@ -196,7 +214,7 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
         html.P(tv.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
         html.P(tv.top_paid_points_text(top_paid_points, points)),
     ]
-    return scatter, distribution, top_paid, h2_distribution, h2_top3
+    return scatter, distribution, top_paid, heading_distribution, heading_top3
 
 
 # run webapp if main
