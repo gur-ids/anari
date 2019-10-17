@@ -28,6 +28,7 @@ def box_plot_by_points(df):
             'data': [trace],
             'layout': {
                 'title': 'Points distribution of players with Cap Hit >= $4M',
+                'width': 400,
             }
         }
     )

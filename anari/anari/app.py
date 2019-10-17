@@ -32,7 +32,7 @@ app.config['suppress_callback_exceptions'] = True
 app.layout = html.Div([
     html.H1(children='NHL meik mani'),
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
-        dcc.Tab(label='Basic Info', value='basic-info-tab'),
+        dcc.Tab(label='Basic info', value='basic-info-tab'),
         dcc.Tab(label='Team stats', value='team-stats'),
         dcc.Tab(label='The ultimate player pick guide', value='linear-regression'),
     ]),
@@ -43,11 +43,23 @@ app.layout = html.Div([
               [Input('tabs', 'value')])
 def render_content(tab):
     if tab == 'basic-info-tab':
-        return html.Div(children=[
-            html.H2(children=['Performance of well paid players']),
-            g.box_plot_by_points(top_players_df),
-            g.scatter_plot_toi_pts('toi_pts', top_players_df),
-        ])
+        return html.Div(
+                style={'textAlign': 'center'},
+                className="container",
+                children=[
+                    html.H2('Performance of well paid players'),
+                    g.scatter_plot_toi_pts('toi_pts', top_players_df),
+                    html.Div(
+                        style={
+                            'width': '100%',
+                            'display': 'flex',
+                            'align-items': 'center',
+                            'justify-content': 'center',
+                        },
+                        children=[g.box_plot_by_points(top_players_df)]
+                    ),
+                ]
+        )
     elif tab == 'linear-regression':
         return html.Div(children=[
             html.H2(children=['The ultimate player pick guide']),
