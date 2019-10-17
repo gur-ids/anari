@@ -24,3 +24,8 @@ def team_detail_title(hoverData, criteria, other_criteria):
         hoverData['points'][0]['text'] if hoverData is not None else 'Nashville Predators',
         other_criteria + ', ' + criteria
     )
+
+
+def name_salary(name, salary):
+    milli = '${:,.2f}M'.format(salary/1000000)
+    return name + ', ' + milli

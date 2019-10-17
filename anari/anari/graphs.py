@@ -2,6 +2,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 
+import view as v
+
 
 def generate_table(dataframe, max_rows=10):
     return html.Table(
@@ -40,12 +42,11 @@ def scatter_plot_toi_pts(plot_id, df):
         df_by_position = df[df['Position'] == i]
         size = df_by_position['Cap Hit']
         sizeref = 4.*max(size)/(25.**2)
-
-        text = df[df['Position'] == i]['H-Ref Name']
+        text = df_by_position.apply(lambda x: v.name_salary(x['H-Ref Name'], x['Salary']), axis=1)
 
         traces.append(go.Scatter(
-            x=df[df['Position'] == i]['TOI/GP'],
-            y=df[df['Position'] == i]['PTS'],
+            x=df_by_position['TOI/GP'],
+            y=df_by_position['PTS'],
             text=text,
             mode='markers',
             opacity=0.7,
