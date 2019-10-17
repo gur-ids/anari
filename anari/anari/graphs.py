@@ -165,14 +165,13 @@ def cap_hit_distribution(df, team_name):
 
 
 def scatter_matrix(df):
-    df = df.drop(['NHLid'], axis=1)
-    dimensions = [dict(label=column, values=df[column]) for column in df.columns]
     index_vals = df['Position'].astype('category').cat.codes
+    df = df.drop(['NHLid', 'Position'], axis=1)
+    dimensions = [dict(label=column, values=df[column]) for column in df.columns]
 
     trace = go.Splom(
         dimensions=dimensions,
         diagonal_visible=False,
-        text=df['Position'],
         marker=dict(
             color=index_vals,
             showscale=False,    # colors encode categorical variables
