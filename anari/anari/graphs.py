@@ -215,6 +215,8 @@ def regression_scatter(y_test, y_pred, category):
     layout = go.Layout(
         showlegend=False,
         title='Regression scatter performance on ' + category,
+        width=700,
+        height=500,
     )
 
     return (
@@ -245,6 +247,8 @@ def forecast_regression_scatter(df):
     layout = go.Layout(
         title='Expected points in next season and current salary',
         hovermode='closest',
+        width=1200,
+        height=500,
     )
 
     return (

@@ -62,20 +62,118 @@ def render_content(tab):
         )
     elif tab == 'linear-regression':
         return html.Div(children=[
-            html.H2(children=['The ultimate player pick guide']),
-            html.Strong(children='When composing team prioritize players from right side (high expected points) and lower side (cheap)'),
-            g.forecast_regression_scatter(forecast_df),
-            html.H2(children=['Evaluation of our ultimate picker guide']),
-            g.regression_scatter(training_stats['PTS']['y_test'], training_stats['PTS']['y_pred'], 'PTS'),
-            html.H3(children=['Evaluation of test data. (PTS=A+G) Therefore linear regressions should look similar.']),
-            g.regression_scatter(training_stats['G']['y_test'], training_stats['G']['y_pred'], 'G'),
-            g.regression_scatter(training_stats['A']['y_test'], training_stats['A']['y_pred'], 'A'),
-            html.H3(children=['Correlation of latest different gathered statistics that were used as explanatory variables but from earlier years.']),
+            html.Div(
+                style={'textAlign': 'center'},
+                children=[
+                    html.H2('The ultimate player pick guide'),
+                    html.Strong('When composing team prioritize players from right side (high expected points) and lower side (cheap)'),
+                ],
+            ),
+
+            html.Div(
+                style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                },
+                children=[
+                    g.forecast_regression_scatter(forecast_df),
+                ],
+            ),
+
+
+            html.H2(style={'textAlign': 'center'}, children=['Evaluation of our ultimate picker guide']),
+
+            html.Div(
+                style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                },
+                children=[
+                    g.regression_scatter(training_stats['PTS']['y_test'], training_stats['PTS']['y_pred'], 'PTS'),
+                ],
+            ),
+
+            html.Div(
+                style={'textAlign': 'center'},
+                children=[
+                    html.Strong('Evaluation of test data. (PTS=A+G) Therefore linear regressions should look similar.'),
+                ],
+            ),
+
+            html.Div(
+                style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                },
+                children=[
+                    g.regression_scatter(training_stats['G']['y_test'], training_stats['G']['y_pred'], 'G'),
+                ],
+            ),
+
+            html.Div(
+                style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                },
+                children=[
+                    g.regression_scatter(training_stats['A']['y_test'], training_stats['A']['y_pred'], 'A'),
+                ],
+            ),
+
+            html.Div(
+                style={'textAlign': 'center'},
+                children=[
+                    html.Strong('Correlation of latest different gathered statistics that were used as explanatory variables but from earlier years.'),
+                ],
+            ),
+
             g.scatter_matrix(latest_df),
-            html.H3(children=['Time on ice was found to be easily predictable as well']),
-            g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
-            html.H3(children=['+/- had a strong correlation with team points but because of round-robin system in building teams we weren\'t able to make it work with linear regression.']),
-            g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-')
+
+            html.Div(
+                style={'textAlign': 'center'},
+                children=[
+                    html.Strong('Time on ice was found to be easily predictable as well'),
+                ],
+            ),
+
+            html.Div(
+                style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                },
+                children=[
+                    g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
+                ],
+            ),
+
+            html.Div(
+                style={'textAlign': 'center'},
+                children=[
+                    html.Strong('+/- had a strong correlation with team points but because of round-robin system in building teams we weren\'t able to make it work with linear regression.'),
+                ],
+            ),
+
+            html.Div(
+                style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                },
+                children=[
+                    g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-'),
+                ],
+            ),
 
         ])
     elif tab == 'team-stats':
