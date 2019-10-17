@@ -7,7 +7,7 @@ import graphs as g
 import hockey_player_fun as hpf
 import hockey_player_model as hpm
 import team_model as tm
-import view as v
+from textual_view import *
 import linear_regression as lr
 
 # initial pre-processing
@@ -34,7 +34,7 @@ app.layout = html.Div([
     dcc.Tabs(id="tabs", value='basic-info-tab', children=[
         dcc.Tab(label='Basic Info', value='basic-info-tab'),
         dcc.Tab(label='Team stats', value='team-stats'),
-        dcc.Tab(label='Linear regression', value='linear-regression'),
+        dcc.Tab(label='The ultimate player pick guide', value='linear-regression'),
     ]),
     html.Div(id='tabs-content'),
 ])
@@ -50,39 +50,24 @@ def render_content(tab):
         ])
     elif tab == 'linear-regression':
         return html.Div(children=[
-            g.scatter_matrix(latest_df),
+            html.H2(children=['The ultimate player pick guide']),
+            html.Strong(children='When composing team prioritize players from right side (high expected points) and lower side (cheap)'),
+            g.forecast_regression_scatter(forecast_df),
+            html.H2(children=['Evaluation of our ultimate picker guide']),
             g.regression_scatter(training_stats['PTS']['y_test'], training_stats['PTS']['y_pred'], 'PTS'),
-            g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-'),
-            g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
+            html.H3(children=['Evaluation of test data. (PTS=A+G) Therefore linear regressions should look similar.']),
             g.regression_scatter(training_stats['G']['y_test'], training_stats['G']['y_pred'], 'G'),
             g.regression_scatter(training_stats['A']['y_test'], training_stats['A']['y_pred'], 'A'),
-            g.forecast_regression_scatter(forecast_df)
+            html.H3(children=['Correlation of latest different gathered statistics that were used as explanatory variables but from earlier years.']),
+            g.scatter_matrix(latest_df),
+            html.H3(children=['Time on ice was found to be easily predictable as well']),
+            g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
+            html.H3(children=['+/- had a strong correlation with team points but because of round-robin system in building teams we weren\'t able to make it work with linear regression.']),
+            g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-')
+            
         ])
     elif tab == 'team-stats':
         return html.Div(id='render_team_stats')
-
-
-position_filter_data = [
-    {'label': 'Center', 'value': 'C'},
-    {'label': 'Defenceman', 'value': 'D'},
-    {'label': 'Left Wing', 'value': 'LW'},
-    {'label': 'Right Wing', 'value': 'RW'}
-]
-position_agg_method = [
-    {'label': 'Mean', 'value': 'mean'},
-    {'label': 'Variance', 'value': 'variance'},
-    {'label': 'Sum', 'value': 'sum'},
-]
-
-dropdown_label_values = [
-    {'value': '+/-', 'label': 'points gained or lost in total while on ice during even game'},
-    {'value': 'Age', 'label': 'Age of player'},
-    {'value': 'Salary', 'label': 'Yearly salary'},
-    {'value': 'Cap Hit', 'label': 'Yearly salary without bonuses'},
-    {'value': 'TOI/GP', 'label': 'Time on ice per game played'},
-    {'value': 'IPP%', 'label': 'Percentage of being present on ice during goals vs all goals'},
-    {'value': 'PTS', 'label': 'Points (Assists + Scored goals)'}
-]
 
 @app.callback(Output('render_team_stats', 'children'),
               [Input('tabs', 'value')])
@@ -97,7 +82,7 @@ def render_team_stats(tab):
                     value='+/-'),
                 dcc.Checklist(
                     id='player_position_filter',
-                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in position_filter_data],
+                    options=[{'label': i.get('label'), 'value': i.get('value')} for i in position_label_values],
                     value=['C', 'D', 'LW', 'RW'],
                     labelStyle={'display': 'inline-block'}
                 ),
@@ -188,16 +173,16 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     points = tm.get_team_total_points(players)
     top_paid_points = hpf.points_share(top_paid_df, points)
 
-    title = v.team_detail_title(hoverData, criteria, other_criteria)
+    title = team_detail_title(hoverData, criteria, other_criteria)
 
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
     distribution = g.cap_hit_distribution(players, team_name_full)
 
     top_paid = [
         g.generate_table(top_paid_df),
-        html.P(v.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
-        html.P(v.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
-        html.P(v.top_paid_points_text(top_paid_points, points)),
+        html.P(top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
+        html.P(top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
+        html.P(top_paid_points_text(top_paid_points, points)),
     ]
     return scatter, distribution, top_paid, h2_distribution, h2_top3
 

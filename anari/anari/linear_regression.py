@@ -338,7 +338,7 @@ def train_models(df):
         lm.fit(X_train, y_train)
         y_pred = lm.predict(X_test)
         # evaluation on model
-        # evaluate_model(lm, category, X, y_test, y_pred)
+        evaluate_model(lm, category, X, y_test, y_pred)
         regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred})
 
     return regression_stats
