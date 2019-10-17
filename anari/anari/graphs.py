@@ -236,7 +236,7 @@ def forecast_regression_scatter(df):
             mode='markers',
             opacity=0.7,
             marker={
-                'size': 15,
+                'size': 10,
                 'line': {'width': 0.5, 'color': 'white'}
             },
             name=i
