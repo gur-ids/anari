@@ -213,6 +213,7 @@ def regression_scatter(y_test, y_pred, category):
     data = [trace0, trace1]
 
     layout = go.Layout(
+        showlegend=False,
         title='Regression scatter performance on ' + category,
     )
 
