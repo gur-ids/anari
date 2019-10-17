@@ -8,7 +8,6 @@ import hockey_player_fun as hpf
 import hockey_player_model as hpm
 import team_model as tm
 import view as v
-from notes import notes
 import linear_regression as lr
 
 # initial pre-processing
@@ -48,7 +47,6 @@ def render_content(tab):
             html.H2(children=['Performance of well paid players']),
             g.box_plot_by_points(top_players_df),
             g.scatter_plot_toi_pts('toi_pts', top_players_df),
-            dcc.Markdown(notes),
         ])
     elif tab == 'linear-regression':
         return html.Div(children=[
