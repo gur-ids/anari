@@ -2,6 +2,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 
+from scipy import stats
 import textual_view as tv
 
 
@@ -195,18 +196,20 @@ def scatter_matrix(df):
     )
 
 
-def regression_scatter(y_test, y_pred, category):
+def regression_scatter(lr_data, category):
 
     trace0 = go.Scatter(
-        x=y_test,
-        y=y_pred,
+        x=lr_data['y_test'],
+        y=lr_data['y_pred'],
         name=category,
         mode='markers',
     )
 
+    slope, intercept, r_value, p_value, std_err = stats.linregress(lr_data['y_test'], lr_data['y_pred'])
+
     trace1 = go.Scatter(
-        x=[y_test.min(), y_test.max()],
-        y=[y_pred.min(), y_pred.max()],
+        x=lr_data['y_test'],
+        y=intercept + slope*lr_data['y_test'],
         mode='lines',
     )
 
