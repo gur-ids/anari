@@ -15,7 +15,6 @@ df = hpm.pre_process('../data/nhl_2017-2018.csv')
 teams_df = tm.pre_process('../data/team_stats_2017-2018.csv')
 
 training_df, forecast_df, latest_df = lr.pre_process_linear()
-
 training_stats = lr.train_models(training_df)
 forecast_df = lr.get_forecast_visual_data(df, forecast_df)
 

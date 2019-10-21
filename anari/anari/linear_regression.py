@@ -28,11 +28,13 @@ COLUMNS_TO_INCLUDE = [
     'Shots_missed',
     'Shots_cbar',
     'Shots_post',
+    'Team',
 ]
 
 COLUMNS_TO_INCLUDE_2017 = [
     'NHLid',
     'Position',
+    'Team',
     'GP',
     'G',
     'A',
@@ -59,6 +61,7 @@ COLUMNS_TO_INCLUDE_2016 = [
     'Last Name',
     'First Name',
     'Position',
+    'Team',
     'GP',
     'G',
     'A',
@@ -83,6 +86,7 @@ COLUMNS_TO_INCLUDE_2016 = [
 COLUMNS_TO_INCLUDE_2015 = [
     'First Name',
     'Last Name',
+    'End Team',
     'Pos',
     'GP',
     'G',
@@ -114,6 +118,19 @@ def parse_position(position, keep_first=False):
 def parse_ipp(ipp):
     return float(ipp.strip('%'))
 
+def parse_team(team, rename_team= False, keep_first= False, delimiter= ','):
+    team_name = team.split(delimiter)[0 if keep_first else -1]
+    if rename_team:
+        if team_name == 'L.A':
+            team_name = 'LAK'
+        elif team_name == 'N.J':
+            team_name = 'NJD'
+        elif team_name == 'S.J':
+            team_name = 'SJS'
+        elif team_name == 'T.B':
+            team_name = 'TBL'
+
+    return team_name
 
 def fill_id(first_name, last_name, df_next_year):
     # NOTE: The function could find id data from all the following seasons
@@ -157,7 +174,8 @@ def format_columns_2015(df, df_2016):
         'Pos': 'Position',
         'IPP': 'IPP%',
         'Crossbar': 'Shots_cbar',
-        'Post': 'Shots_post'
+        'Post': 'Shots_post',
+        'End Team': 'Team'
     })
 
     df['NHLid'] = df.apply(lambda x: fill_id(x['First Name'], x['Last Name'], df_2016), axis=1)
@@ -172,7 +190,7 @@ def pre_process_2017():
         path,
         header=2,
         usecols=COLUMNS_TO_INCLUDE_2017,
-        converters={'Position': parse_position, 'IPP%': parse_ipp},
+        converters={'Position': parse_position, 'IPP%': parse_ipp, 'Team': parse_team},
     )
 
     df = format_columns_2017(df)
@@ -190,7 +208,8 @@ def pre_process_2016():
         na_values=NA_VALUES,
         converters={
             'Position': lambda x: parse_position(x, True),
-            'IPP%': parse_ipp
+            'IPP%': parse_ipp,
+            'Team': lambda x: parse_team(x, keep_first=True,rename_team=True, delimiter='/')
         },
         # Run na_values first, then converters
         # https://github.com/pandas-dev/pandas/issues/13302
@@ -233,9 +252,21 @@ def remove_missing(df):
     return df.dropna(subset=['NHLid'])
 
 
-def transform_categorical(df):
+def transform_categorical(df_2017, df_2016, df_2015):
+    df_2017['Season'] = 2017
+    df_2016['Season'] = 2016
+    df_2015['Season'] = 2015
+
+    df = pd.concat([df_2017, df_2016, df_2015])
+
     df['Position'] = df['Position'].astype('category').cat.codes
-    return df
+    df['Team'] = df['Team'].astype('category').cat.codes
+
+    df_2017_categorized = df.loc[df['Season'] == 2017].drop(['Season'], axis=1)
+    df_2016_categorized = df.loc[df['Season'] == 2016].drop(['Season'], axis=1)
+    df_2015_categorized = df.loc[df['Season'] == 2015].drop(['Season'], axis=1)
+
+    return df_2017_categorized, df_2016_categorized, df_2015_categorized
 
 
 def filter_columns(df):
@@ -280,9 +311,7 @@ def pre_process_linear():
     df_2016 = remove_missing(df_2016)
     df_2015 = remove_missing(df_2015)
 
-    df_2017 = transform_categorical(df_2017)
-    df_2016 = transform_categorical(df_2016)
-    df_2015 = transform_categorical(df_2015)
+    df_2017, df_2016, df_2015 = transform_categorical(df_2017, df_2016, df_2015)
 
     fill = pd.DataFrame()
     fill['NHLid'] = df_2016['NHLid']
@@ -302,7 +331,6 @@ def pre_process_linear():
     )
 
     return training_df, forecast_df, df_2017
-
 
 def evaluate_model(lm, category, X, y_test, y_pred):
     slope_df = pd.DataFrame({
