@@ -31,6 +31,9 @@ def box_plot_by_points(df):
             'layout': {
                 'title': 'Points distribution of players with Cap Hit >= $4M',
                 'width': 400,
+                'yaxis': go.layout.YAxis(
+                    title='Points',
+                ),
             }
         }
     )
@@ -60,7 +63,7 @@ def scatter_plot_toi_pts(plot_id, df):
                 'sizemin': 4,
                 'line': {'width': 0.5, 'color': 'white'}
             },
-            name=i
+            name=next((d.get("label") for d in tv.position_label_values if d.get('value') == i), 'Label not found'),
         ))
 
     return dcc.Graph(
