@@ -31,6 +31,11 @@ def name_salary(name, salary):
     return name + ', ' + milli
 
 
+def name_salary_pts(name, salary, pts):
+    name_and_salary = name_salary(name, salary)
+    return name_and_salary + ', ' + str(int(pts)) + ' points'
+
+
 position_label_values = [
         {'label': 'Center', 'value': 'C'},
         {'label': 'Defenceman', 'value': 'D'},

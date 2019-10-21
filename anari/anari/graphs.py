@@ -252,10 +252,12 @@ def forecast_regression_scatter(df):
     for i in df.Position.unique():
         df_by_position = df[df['Position'] == i]
         traces.append(go.Scatter(
-            #text = df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Cap Hit']), axis=1),
             x=df[df['Position'] == i]['forecast_PTS'],
             y=df[df['Position'] == i]['Cap Hit'],
-            text=(df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Cap Hit']), axis=1) + ', ' + df_by_position.apply(lambda x: str(int(x['forecast_PTS'])), axis=1) + 'PTS'),
+            text=df_by_position.apply(
+                lambda x: tv.name_salary_pts(x['H-Ref Name'], x['Cap Hit'], x['forecast_PTS']), axis=1
+            ),
+            hoverinfo='text',
             mode='markers',
             opacity=0.7,
             marker={
