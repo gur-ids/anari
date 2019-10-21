@@ -4,6 +4,7 @@ import plotly.graph_objs as go
 
 from scipy import stats
 import textual_view as tv
+from math import log10, floor
 
 
 def generate_table(dataframe, max_rows=10):
@@ -44,7 +45,7 @@ def scatter_plot_toi_pts(plot_id, df):
         df_by_position = df[df['Position'] == i]
         size = df_by_position['Cap Hit']
         sizeref = 4.*max(size)/(25.**2)
-        text = df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Salary']), axis=1)
+        text = df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Cap Hit']), axis=1)
 
         traces.append(go.Scatter(
             x=df_by_position['TOI/GP'],
@@ -200,7 +201,7 @@ def regression_scatter(lr_data, category):
 
     trace0 = go.Scatter(
         x=lr_data['y_test'],
-        y=lr_data['y_pred'],
+        y=lr_data['y_pred'].round(0),
         name=category,
         mode='markers',
     )
@@ -215,19 +216,25 @@ def regression_scatter(lr_data, category):
 
     data = [trace0, trace1]
 
-    width = 700
-    height = width * lr_data['y_pred'].max() / lr_data['y_test'].max()
-
-    if category == '+/-':
-        # This has incompatible range for scaling
-        width = 700
-        height = 700
-
+    width = 600
+    height = 600
+    max_value = max(lr_data['y_pred'].max(), lr_data['y_test'].max())
+    dtick = round(max_value, -int(floor(log10(abs(max_value))))) / 10
     layout = go.Layout(
         showlegend=False,
         title='Regression scatter performance on ' + category,
         width=width,
         height=height,
+        xaxis = go.layout.XAxis(
+            tickmode = 'linear',
+            dtick = dtick,
+            title='Actual value'
+        ),
+        yaxis = go.layout.YAxis(
+            tickmode = 'linear',
+            dtick = dtick,
+            title='Predicted value'
+        )
     )
 
     return (
@@ -243,10 +250,12 @@ def regression_scatter(lr_data, category):
 def forecast_regression_scatter(df):
     traces = []
     for i in df.Position.unique():
+        df_by_position = df[df['Position'] == i]
         traces.append(go.Scatter(
+            #text = df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Cap Hit']), axis=1),
             x=df[df['Position'] == i]['forecast_PTS'],
             y=df[df['Position'] == i]['Cap Hit'],
-            text=df[df['Position'] == i]['H-Ref Name'],
+            text=(df_by_position.apply(lambda x: tv.name_salary(x['H-Ref Name'], x['Cap Hit']), axis=1) + ', ' + df_by_position.apply(lambda x: str(int(x['forecast_PTS'])), axis=1) + 'PTS'),
             mode='markers',
             opacity=0.7,
             marker={
@@ -260,6 +269,8 @@ def forecast_regression_scatter(df):
         hovermode='closest',
         width=1200,
         height=500,
+        xaxis={'title': 'Estimated points'},
+        yaxis={'title': 'Current Cap Hit'}
     )
 
     return (

@@ -348,7 +348,6 @@ def forecast(df):
     predict_df = df.drop(['NHLid'], axis=1)
     for category in models.keys():  # delete test result cols
         predict_df = predict_df.drop(['latest_' + category], axis=1)
-    result_df = pd.DataFrame()
     for category in models.keys():
         result_on_category = models[category].predict(predict_df)
         df['forecast_' + category] = result_on_category
@@ -364,5 +363,5 @@ def get_forecast_visual_data(df_full, forecast_df):
     cap_hit_df['Position'] = df_full['Position']
 
     forecast_results = forecast(forecast_df)
-    forecast_df = forecast_df.merge(cap_hit_df, left_on='NHLid', right_on='NHLid', how='inner')
-    return forecast_df
+    forecast_results = forecast_results.merge(cap_hit_df, left_on='NHLid', right_on='NHLid', how='inner')
+    return forecast_results

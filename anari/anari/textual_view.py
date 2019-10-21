@@ -45,7 +45,7 @@ position_agg_method = [
     ]
 
 dropdown_label_values = [
-    {'value': '+/-', 'label': 'points gained or lost in total while on ice during even game'},
+    {'value': '+/-', 'label': 'Points gained or lost in total while on ice during even game'},
     {'value': 'Age', 'label': 'Age of player'},
     {'value': 'Salary', 'label': 'Yearly salary'},
     {'value': 'Cap Hit', 'label': 'Yearly salary without bonuses'},
