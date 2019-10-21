@@ -1,14 +1,14 @@
 def top_paid_cap_hit_text(top_paid_cap_hit, team_cap_hit):
     return 'Cap Hit of top three most expensive players: {0}%. Total Team Cap Hit (without goalies) is: {1}'.format(
             int(round(top_paid_cap_hit)),
-            team_cap_hit,
+            milli(team_cap_hit),
     )
 
 
 def top_paid_max_cap_hit_text(top_paid_cap_hit, max_cap_hit):
     return 'Cap Hit of top three most expensive players: {0}%. Maximum Cap Hit is: {1}'.format(
             int(round(top_paid_cap_hit)),
-            max_cap_hit,
+            milli(max_cap_hit),
     )
 
 
@@ -26,9 +26,12 @@ def team_detail_title(hoverData, criteria, other_criteria):
     )
 
 
+def milli(salary):
+    return '${:,.2f}M'.format(salary/1000000)
+
+
 def name_salary(name, salary):
-    milli = '${:,.2f}M'.format(salary/1000000)
-    return name + ', ' + milli
+    return name + ', ' + milli(salary)
 
 
 def name_salary_pts(name, salary, pts):
