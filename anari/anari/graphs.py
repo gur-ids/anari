@@ -225,14 +225,14 @@ def regression_scatter(lr_data, category):
         title='Regression scatter performance on ' + category,
         width=width,
         height=height,
-        xaxis = go.layout.XAxis(
-            tickmode = 'linear',
-            dtick = dtick,
+        xaxis=go.layout.XAxis(
+            tickmode='linear',
+            dtick=dtick,
             title='Actual value'
         ),
-        yaxis = go.layout.YAxis(
-            tickmode = 'linear',
-            dtick = dtick,
+        yaxis=go.layout.YAxis(
+            tickmode='linear',
+            dtick=dtick,
             title='Predicted value'
         )
     )
