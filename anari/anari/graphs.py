@@ -215,11 +215,19 @@ def regression_scatter(lr_data, category):
 
     data = [trace0, trace1]
 
+    width = 700
+    height = width * lr_data['y_pred'].max() / lr_data['y_test'].max()
+
+    if category == '+/-':
+        # This has incompatible range for scaling
+        width = 700
+        height = 700
+
     layout = go.Layout(
         showlegend=False,
         title='Regression scatter performance on ' + category,
-        width=700,
-        height=500,
+        width=width,
+        height=height,
     )
 
     return (
