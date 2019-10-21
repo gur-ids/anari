@@ -93,7 +93,7 @@ def render_content(tab):
                     'justify-content': 'center',
                 },
                 children=[
-                    g.regression_scatter(training_stats['PTS']['y_test'], training_stats['PTS']['y_pred'], 'PTS'),
+                    g.regression_scatter(training_stats['PTS'], 'PTS'),
                 ],
             ),
 
@@ -112,7 +112,7 @@ def render_content(tab):
                     'justify-content': 'center',
                 },
                 children=[
-                    g.regression_scatter(training_stats['G']['y_test'], training_stats['G']['y_pred'], 'G'),
+                    g.regression_scatter(training_stats['G'], 'G'),
                 ],
             ),
 
@@ -124,7 +124,7 @@ def render_content(tab):
                     'justify-content': 'center',
                 },
                 children=[
-                    g.regression_scatter(training_stats['A']['y_test'], training_stats['A']['y_pred'], 'A'),
+                    g.regression_scatter(training_stats['A'], 'A'),
                 ],
             ),
 
@@ -152,7 +152,7 @@ def render_content(tab):
                     'justify-content': 'center',
                 },
                 children=[
-                    g.regression_scatter(training_stats['TOI']['y_test'], training_stats['TOI']['y_pred'], 'TOI'),
+                    g.regression_scatter(training_stats['TOI'], 'TOI'),
                 ],
             ),
 
@@ -171,7 +171,7 @@ def render_content(tab):
                     'justify-content': 'center',
                 },
                 children=[
-                    g.regression_scatter(training_stats['+/-']['y_test'], training_stats['+/-']['y_pred'], '+/-'),
+                    g.regression_scatter(training_stats['+/-'], '+/-'),
                 ],
             ),
 

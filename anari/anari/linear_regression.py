@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from scipy import stats
 
 NA_VALUES = ['#DIV/0!']
 
@@ -339,9 +338,8 @@ def train_models(df):
         lm.fit(X_train, y_train)
         y_pred = lm.predict(X_test)
         # evaluation on model
-        #evaluate_model(lm, category, X, y_test, y_pred)
-        slope, intercept, r_value, p_value, std_err = stats.linregress(y_test,y_pred)
-        regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred, 'slope': slope})
+        evaluate_model(lm, category, X, y_test, y_pred)
+        regression_stats[category] = dict({'y_test': y_test, 'y_pred': y_pred})
 
     return regression_stats
 
