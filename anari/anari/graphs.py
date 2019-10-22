@@ -7,15 +7,15 @@ import textual_view as tv
 from math import log10, floor
 
 
-def generate_table(dataframe, max_rows=10):
+def generate_table(df, max_rows=10):
     return html.Table(
         # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+        [html.Tr([html.Th(col) for col in df.columns])] +
 
         # Body
         [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-        ]) for i in range(min(len(dataframe), max_rows))]
+            html.Td(df.iloc[i][col]) for col in df.columns
+        ]) for i in range(min(len(df), max_rows))]
     )
 
 
