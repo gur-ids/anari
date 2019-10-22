@@ -38,23 +38,26 @@ app.layout = html.Div([
     html.Div(id='tabs-content'),
 ])
 
+center_text_style={'textAlign': 'center'}
+center_content_style={
+                    'width': '100%',
+                    'display': 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                }
+
 @app.callback(Output('tabs-content', 'children'),
               [Input('tabs', 'value')])
 def render_content(tab):
     if tab == 'basic-info-tab':
         return html.Div(
-                style={'textAlign': 'center'},
+                style=center_text_style,
                 className="container",
                 children=[
                     html.H2('Performance of well paid players'),
                     g.scatter_plot_toi_pts('toi_pts', top_players_df),
                     html.Div(
-                        style={
-                            'width': '100%',
-                            'display': 'flex',
-                            'align-items': 'center',
-                            'justify-content': 'center',
-                        },
+                        style=center_content_style,
                         children=[g.box_plot_by_points(top_players_df)]
                     ),
                 ]
@@ -62,7 +65,7 @@ def render_content(tab):
     elif tab == 'linear-regression':
         return html.Div(children=[
             html.Div(
-                style={'textAlign': 'center'},
+                style=center_text_style,
                 children=[
                     html.H2('The ultimate player pick guide'),
                     html.Strong('When composing team prioritize players from right side (high expected points) and lower side (cheap)'),
@@ -70,105 +73,75 @@ def render_content(tab):
             ),
 
             html.Div(
-                style={
-                    'width': '100%',
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                },
+                style=center_content_style,
                 children=[
                     g.forecast_regression_scatter(forecast_df),
                 ],
             ),
 
-
-            html.H2(style={'textAlign': 'center'}, children=['Evaluation of our ultimate picker guide']),
+            html.H2(style=center_text_style, children=['Evaluation of our ultimate picker guide']),
 
             html.Div(
-                style={
-                    'width': '100%',
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                },
+                style=center_content_style,
                 children=[
                     g.regression_scatter(training_stats['PTS'], 'PTS'),
                 ],
             ),
 
             html.Div(
-                style={'textAlign': 'center'},
+                style=center_text_style,
                 children=[
                     html.Strong('Evaluation of test data. (PTS=A+G) Therefore linear regressions should look similar.'),
                 ],
             ),
 
             html.Div(
-                style={
-                    'width': '100%',
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                },
+                style=center_content_style,
                 children=[
                     g.regression_scatter(training_stats['G'], 'G'),
                 ],
             ),
 
             html.Div(
-                style={
-                    'width': '100%',
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                },
+                style=center_content_style,
                 children=[
                     g.regression_scatter(training_stats['A'], 'A'),
                 ],
             ),
 
             html.Div(
-                style={'textAlign': 'center'},
+                style=center_text_style,
                 children=[
                     html.Strong('Correlation of latest different gathered statistics that were used as explanatory variables but from earlier years.'),
                 ],
             ),
-
-            g.scatter_matrix(latest_df),
+            html.Div(
+                style=center_content_style,
+                children=[g.scatter_matrix(latest_df)]),
 
             html.Div(
-                style={'textAlign': 'center'},
+                style=center_text_style,
                 children=[
                     html.Strong('Time on ice was found to be easily predictable as well'),
                 ],
             ),
 
             html.Div(
-                style={
-                    'width': '100%',
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                },
+                style=center_content_style,
                 children=[
                     g.regression_scatter(training_stats['TOI'], 'TOI'),
                 ],
             ),
 
             html.Div(
-                style={'textAlign': 'center'},
+                style=center_text_style,
                 children=[
                     html.Strong('+/- had a strong correlation with team points but because of round-robin system in building teams we weren\'t able to make it work with linear regression.'),
                 ],
             ),
 
             html.Div(
-                style={
-                    'width': '100%',
-                    'display': 'flex',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                },
+                style=center_content_style,
                 children=[
                     g.regression_scatter(training_stats['+/-'], '+/-'),
                 ],
@@ -222,7 +195,7 @@ def render_team_stats(tab):
             )
         ], className="row"),
         html.H3(
-            style={'textAlign': 'center'},
+            style=center_text_style,
             id='team-name-heading-distribution'
         ),
         html.Div(
@@ -239,7 +212,7 @@ def render_team_stats(tab):
             ],
         ),
         html.H3(
-            style={'textAlign': 'center'},
+            style=center_text_style,
             id='team-name-heading-top3',
         ),
         html.Div(id='team-details-top-paid'),
@@ -305,12 +278,21 @@ def update_detailed_team_graphs(hoverData, player_positions, criteria, other_cri
     scatter = g.update_detailed_team_graphs(players, other_criteria, criteria, title)
     distribution = g.cap_hit_distribution(players, team_name_full)
 
-    top_paid = [
-        g.generate_table(top_paid_df),
-        html.P(tv.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
-        html.P(tv.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
-        html.P(tv.top_paid_points_text(top_paid_points, points)),
-    ]
+    top_paid = html.Div(
+        children=[
+            html.Div(
+                style=center_content_style,
+                children=[g.generate_table(top_paid_df)]
+            ),
+            html.Div(
+                style=center_text_style,
+                children=[
+                    html.P(tv.top_paid_cap_hit_text(top_paid_cap_hit, cap_hit)),
+                    html.P(tv.top_paid_max_cap_hit_text(top_paid_cap_hit_total, MAX_CAP_HIT)),
+                    html.P(tv.top_paid_points_text(top_paid_points, points))
+                ]
+            )
+        ])
     return scatter, distribution, top_paid, heading_distribution, heading_top3
 
 
