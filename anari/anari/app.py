@@ -117,7 +117,13 @@ def render_content(tab):
             ),
             html.Div(
                 style=center_content_style,
-                children=[g.scatter_matrix(latest_df)]),
+                children=[
+                    html.Div(
+                        style={'overflowX': 'auto'},
+                        children=[g.scatter_matrix(latest_df)],
+                    ),
+                ],
+            ),
 
             html.Div(
                 style=center_text_style,
