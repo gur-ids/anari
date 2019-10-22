@@ -1,6 +1,8 @@
 # NRI data analysis
 This is a NHL meik mani application
 
+![MR DATA SCHEINTIST](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_ev-fSNqzax524ICcGobVwCtgqLjsnyqB_s7rVvI5VBzJ7fWovA)
+
 ## Prerequisites
 
 Install requirements with:
